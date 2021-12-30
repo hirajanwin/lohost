@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.Client.Models", "loh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.Client.Logging", "lohost.Client.Logging\lohost.Client.Logging.csproj", "{1705950F-4ED0-4B36-90AB-86C4F71DD961}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.Hub", "lohost.Hub\lohost.Hub.csproj", "{6F78AF26-DEEB-4EB2-84D3-FEEA3E033D28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.Logging", "lohost.Logging\lohost.Logging.csproj", "{699D49A5-B7BD-4846-8ABA-108764F67FC1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{1705950F-4ED0-4B36-90AB-86C4F71DD961}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1705950F-4ED0-4B36-90AB-86C4F71DD961}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1705950F-4ED0-4B36-90AB-86C4F71DD961}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F78AF26-DEEB-4EB2-84D3-FEEA3E033D28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F78AF26-DEEB-4EB2-84D3-FEEA3E033D28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F78AF26-DEEB-4EB2-84D3-FEEA3E033D28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F78AF26-DEEB-4EB2-84D3-FEEA3E033D28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{699D49A5-B7BD-4846-8ABA-108764F67FC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{699D49A5-B7BD-4846-8ABA-108764F67FC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{699D49A5-B7BD-4846-8ABA-108764F67FC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{699D49A5-B7BD-4846-8ABA-108764F67FC1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
