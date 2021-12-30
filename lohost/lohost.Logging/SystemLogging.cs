@@ -1,5 +1,7 @@
 ﻿using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace lohost.Logging
 {
