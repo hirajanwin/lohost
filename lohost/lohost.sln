@@ -7,13 +7,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Client", "lohost.Cli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Client.Services", "lohost.Client.Services\lohost.Client.Services.csproj", "{149784D2-EF00-4545-91AB-E0B7DA98BCD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.Client.Models", "lohost.Client.Models\lohost.Client.Models.csproj", "{00423979-04E0-4BCF-9B69-E9C9D646084F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Client.Models", "lohost.Client.Models\lohost.Client.Models.csproj", "{00423979-04E0-4BCF-9B69-E9C9D646084F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.Client.Logging", "lohost.Client.Logging\lohost.Client.Logging.csproj", "{1705950F-4ED0-4B36-90AB-86C4F71DD961}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Client.Logging", "lohost.Client.Logging\lohost.Client.Logging.csproj", "{1705950F-4ED0-4B36-90AB-86C4F71DD961}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.Hub", "lohost.Hub\lohost.Hub.csproj", "{6F78AF26-DEEB-4EB2-84D3-FEEA3E033D28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Logging", "lohost.Logging\lohost.Logging.csproj", "{699D49A5-B7BD-4846-8ABA-108764F67FC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.Logging", "lohost.Logging\lohost.Logging.csproj", "{699D49A5-B7BD-4846-8ABA-108764F67FC1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.API", "lohost.API\lohost.API.csproj", "{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.API.Models", "lohost.API.Models\lohost.API.Models.csproj", "{80BC5D31-C007-4F33-B549-FAFBE7CC7537}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.Models", "lohost.Models\lohost.Models.csproj", "{A193F9CB-6F4A-4B00-9D24-C452FDB55EE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +41,22 @@ Global
 		{1705950F-4ED0-4B36-90AB-86C4F71DD961}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1705950F-4ED0-4B36-90AB-86C4F71DD961}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1705950F-4ED0-4B36-90AB-86C4F71DD961}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6F78AF26-DEEB-4EB2-84D3-FEEA3E033D28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6F78AF26-DEEB-4EB2-84D3-FEEA3E033D28}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6F78AF26-DEEB-4EB2-84D3-FEEA3E033D28}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6F78AF26-DEEB-4EB2-84D3-FEEA3E033D28}.Release|Any CPU.Build.0 = Release|Any CPU
 		{699D49A5-B7BD-4846-8ABA-108764F67FC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{699D49A5-B7BD-4846-8ABA-108764F67FC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{699D49A5-B7BD-4846-8ABA-108764F67FC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{699D49A5-B7BD-4846-8ABA-108764F67FC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80BC5D31-C007-4F33-B549-FAFBE7CC7537}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80BC5D31-C007-4F33-B549-FAFBE7CC7537}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80BC5D31-C007-4F33-B549-FAFBE7CC7537}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80BC5D31-C007-4F33-B549-FAFBE7CC7537}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A193F9CB-6F4A-4B00-9D24-C452FDB55EE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A193F9CB-6F4A-4B00-9D24-C452FDB55EE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A193F9CB-6F4A-4B00-9D24-C452FDB55EE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A193F9CB-6F4A-4B00-9D24-C452FDB55EE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

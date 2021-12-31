@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Threading;
 
-namespace lohost.Hub
+namespace lohost.API.Hubs.RequestTypes
 {
-    public class BoolRequest
+    public class LongRequest
     {
-        public static event EventHandler<BoolResp> BoolResponse = delegate { };
+        public static event EventHandler<LongResp> LongResponse = delegate { };
 
         private AutoResetEvent _messageReceived = new AutoResetEvent(false);
-        private bool? data = null;
-
+        private long? data = null;
+        
         private int _defaultTimeout = 10 * 1000;
 
         public string TransactionId
@@ -17,20 +17,20 @@ namespace lohost.Hub
             get; set;
         }
 
-        public BoolRequest()
+        public LongRequest()
         {
             TransactionId = System.Guid.NewGuid().ToString();
         }
 
-        public bool? Execute()
+        public long? Execute()
         {
-            BoolResponse += Handler;
+            LongResponse += Handler;
 
             try
             {
                 bool responseReceived = this._messageReceived.WaitOne(_defaultTimeout);
 
-                BoolResponse -= Handler;
+                LongResponse -= Handler;
 
                 if (responseReceived)
                 {
@@ -43,32 +43,32 @@ namespace lohost.Hub
             }
             catch (Exception)
             {
-                BoolResponse -= Handler;
+                LongResponse -= Handler;
 
                 throw;
             }
         }
 
-        private void Handler(object sender, BoolResp args)
+        private void Handler(object sender, LongResp args)
         {
             if (args.TransactionID == TransactionId)
             {
-                data = args.Bool;
+                data = args.Long;
 
                 this._messageReceived.Set();
             }
         }
 
-        public static void EventOccured(BoolResp BoolResp)
+        public static void EventOccured(LongResp LongResp)
         {
-            BoolResponse?.Invoke(null, BoolResp);
+            LongResponse?.Invoke(null, LongResp);
         }
     }
 
-    public class BoolResp : EventArgs
+    public class LongResp : EventArgs
     {
         public string TransactionID { get; set; }
 
-        public bool? Bool { get; set; }
+        public long? Long { get; set; }
     }
 }

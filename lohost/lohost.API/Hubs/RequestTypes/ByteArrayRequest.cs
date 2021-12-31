@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace lohost.Hub
+namespace lohost.API.Hubs.RequestTypes
 {
     public class ByteArrayRequest
     {

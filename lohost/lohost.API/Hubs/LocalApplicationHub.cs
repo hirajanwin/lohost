@@ -1,8 +1,9 @@
-﻿using lohost.Logging;
+﻿using lohost.API.Hubs.RequestTypes;
+using lohost.Logging;
 using Microsoft.AspNet.SignalR.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
-namespace lohost.Hub
+namespace lohost.API.Hubs
 {
     [HubName("LocalApplicationHub")]
     public class LocalApplicationHub : Hub

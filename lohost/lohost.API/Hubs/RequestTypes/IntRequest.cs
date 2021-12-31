@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading;
 
-namespace lohost.Hub
+namespace lohost.API.Hubs.RequestTypes
 {
-    public class StringRequest
+    public class IntRequest
     {
-        public static event EventHandler<StringResp> StringResponse = delegate { };
+        public static event EventHandler<IntResp> IntResponse = delegate { };
 
         private AutoResetEvent _messageReceived = new AutoResetEvent(false);
-        private string data = null;
+        private int? data = null;
 
         private int _defaultTimeout = 10 * 1000;
 
@@ -17,20 +17,20 @@ namespace lohost.Hub
             get; set;
         }
 
-        public StringRequest()
+        public IntRequest()
         {
             TransactionId = System.Guid.NewGuid().ToString();
         }
 
-        public string Execute()
+        public int? Execute()
         {
-            StringResponse += Handler;
+            IntResponse += Handler;
 
             try
             {
                 bool responseReceived = this._messageReceived.WaitOne(_defaultTimeout);
 
-                StringResponse -= Handler;
+                IntResponse -= Handler;
 
                 if (responseReceived)
                 {
@@ -43,32 +43,32 @@ namespace lohost.Hub
             }
             catch (Exception)
             {
-                StringResponse -= Handler;
+                IntResponse -= Handler;
 
                 throw;
             }
         }
 
-        private void Handler(object sender, StringResp args)
+        private void Handler(object sender, IntResp args)
         {
             if (args.TransactionID == TransactionId)
             {
-                data = args.String;
+                data = args.Int;
 
                 this._messageReceived.Set();
             }
         }
 
-        public static void EventOccured(StringResp stringResp)
+        public static void EventOccured(IntResp IntResp)
         {
-            StringResponse?.Invoke(null, stringResp);
+            IntResponse?.Invoke(null, IntResp);
         }
     }
 
-    public class StringResp : EventArgs
+    public class IntResp : EventArgs
     {
         public string TransactionID { get; set; }
 
-        public string String { get; set; }
+        public int? Int { get; set; }
     }
 }
