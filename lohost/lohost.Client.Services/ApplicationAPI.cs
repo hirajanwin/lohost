@@ -56,9 +56,9 @@ namespace lohost.Client.Services
 
             _apiHubConnection.On("GetChunkSize", async (string transactionId) => await GetChunkSize(transactionId));
 
-            _apiHubConnection.On("SendDocument", async (string transactionId, string fileId) => await SendDocument(transactionId, fileId));
+            _apiHubConnection.On("SendDocument", async (string transactionId, string document) => await SendDocument(transactionId, document));
 
-            _apiHubConnection.On("SendDocumentChunk", async (string transactionId, string fileId, long startRange, long endRange) => await SendDocumentChunk(transactionId, fileId, startRange, endRange));
+            _apiHubConnection.On("SendDocumentChunk", async (string transactionId, string document, long startRange, long endRange) => await SendDocumentChunk(transactionId, document, startRange, endRange));
 
             await Start();
         }
@@ -189,7 +189,7 @@ namespace lohost.Client.Services
             }
         }
 
-        public async Task SendDocumentChunk(string transactionId, string fileId, long startRange, long endRange)
+        public async Task SendDocumentChunk(string transactionId, string document, long startRange, long endRange)
         {
             _logger.Info($"Request found to send document chunk");
 
@@ -197,7 +197,7 @@ namespace lohost.Client.Services
 
             if (!string.IsNullOrEmpty(applicationFolder))
             {
-                string filePath = Path.Join(applicationFolder, fileId.Replace(':', '\\'));
+                string filePath = Path.Join(applicationFolder, document.Replace(':', '\\'));
 
                 int readCount = (int)(endRange - startRange);
 
