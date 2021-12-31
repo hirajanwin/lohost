@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\lohost.API.Models\lohost.API.Models.csproj" />
     <ProjectReference Include="..\lohost.Logging\lohost.Logging.csproj" />
+    <ProjectReference Include="..\lohost.Models\lohost.Models.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 ﻿using lohost.API.Hubs.RequestTypes;
 using lohost.Logging;
+using lohost.Models;
 using Microsoft.AspNet.SignalR.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
@@ -48,24 +49,23 @@ namespace lohost.API.Hubs
 
             await base.OnDisconnectedAsync(ex);
         }
-
-        public async Task<int> GetSendingChunks(string applicationId, string fileId)
+        public async Task<ExternalDocument> GetDocument(string applicationId, string document)
         {
             if (_ConnectedApplications.ContainsKey(applicationId))
             {
-                IntRequest intRequest = new IntRequest();
+                ExternalDocumentRequest externalDocumentRequest = new ExternalDocumentRequest();
 
-                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("GetSendingChunks", intRequest.TransactionId, fileId);
+                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("GetDocument", externalDocumentRequest.TransactionId, document);
 
-                int? numberOfChunks = intRequest.Execute();
+                ExternalDocument file = externalDocumentRequest.Execute();
 
-                if (numberOfChunks.HasValue)
+                if (file != null)
                 {
-                    return numberOfChunks.Value;
+                    return file;
                 }
                 else
                 {
-                    throw new Exception("Error retrieving chunk size");
+                    throw new Exception("Error retrieving file");
                 }
             }
             else
@@ -74,12 +74,53 @@ namespace lohost.API.Hubs
             }
         }
 
-        public void NumberOfSendingChunks(string transactionId, int? noOfChunks)
+        public void ItemRetrieved(string transactionId, ExternalDocument document)
+        {
+            ExternalDocumentRequest.EventOccured(new ExternalDocumentResp()
+            {
+                TransactionID = transactionId,
+                ExternalDocument = document
+            });
+        }
+
+        public async Task<int> GetChunkSize(string applicationId)
+        {
+            if (_ConnectedApplications.ContainsKey(applicationId))
+            {
+                if (_ConnectedApplications.ContainsKey(applicationId))
+                {
+                    IntRequest intRequest = new IntRequest();
+
+                    await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("GetChunkSize", intRequest.TransactionId);
+
+                    int? chunkSize = intRequest.Execute();
+
+                    if (chunkSize.HasValue)
+                    {
+                        return chunkSize.Value;
+                    }
+                    else
+                    {
+                        throw new Exception("Error retrieving chunk size");
+                    }
+                }
+                else
+                {
+                    throw new Exception("Unable to fnd the local application");
+                }
+            }
+            else
+            {
+                throw new Exception("Unable to connect to local application");
+            }
+        }
+
+        public void ChunkSize(string transactionId, int? chunkSize)
         {
             IntRequest.EventOccured(new IntResp()
             {
                 TransactionID = transactionId,
-                Int = noOfChunks
+                Int = chunkSize
             });
         }
 
@@ -119,13 +160,13 @@ namespace lohost.API.Hubs
             });
         }
 
-        public async Task<byte[]> SendDocumentChunk(string applicationId, string fileId, long startRange, long endRange)
+        public async Task<byte[]> SendDocumentChunk(string applicationId, string document, long startRange, long endRange)
         {
             if (_ConnectedApplications.ContainsKey(applicationId))
             {
                 ByteArrayRequest byteArrayRequest = new ByteArrayRequest();
 
-                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("DownloadDocumentChunk", byteArrayRequest.TransactionId, fileId, startRange, endRange);
+                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("DownloadDocumentChunk", byteArrayRequest.TransactionId, document, startRange, endRange);
 
                 byte[] fileData = byteArrayRequest.Execute();
 

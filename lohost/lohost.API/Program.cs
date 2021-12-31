@@ -1,5 +1,6 @@
 using lohost.API.Controllers;
 using lohost.API.Hubs;
+using lohost.API.Models;
 using lohost.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,7 +41,7 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
     {
         LocalApplication localApplication = new LocalApplication(systemLogging, localIntegrationHub);
 
-        await localApplication.GetDocument(applicationId, queryPath);
+        DocumentResponse documentResponse = await localApplication.GetDocument(applicationId, queryPath);
     }
     else
     {

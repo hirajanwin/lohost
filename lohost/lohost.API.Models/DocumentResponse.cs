@@ -2,6 +2,6 @@
 {
     public class DocumentResponse
     {
-
+        public byte[] DocumentData { get; set; }
     }
 }

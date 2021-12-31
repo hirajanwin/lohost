@@ -1,6 +1,7 @@
 ﻿using lohost.API.Hubs;
 using lohost.API.Models;
 using lohost.Logging;
+using lohost.Models;
 
 namespace lohost.API.Controllers
 {
@@ -17,13 +18,13 @@ namespace lohost.API.Controllers
 
         public async Task<DocumentResponse> GetDocument(string applicationId, string document)
         {
-            /*ExternalDocument selectedFile = await _localApplicationHub.GetItem(applicationId, document);
+            ExternalDocument selectedFile = await _localApplicationHub.GetDocument(applicationId, document);
 
             if (selectedFile != null)
             {
                 _systemLogging.Info("Retrieved the selected file: " + document);
 
-                int chunkSize = await _localApplicationHub.GetChunkSize(owner.Id, localIntegrationId);
+                int chunkSize = await _localApplicationHub.GetChunkSize(applicationId);
 
                 _systemLogging.Info("Retrieved file size: " + selectedFile.Size);
                 _systemLogging.Info("Retrieved chunk size: " + chunkSize);
@@ -44,24 +45,26 @@ namespace lohost.API.Controllers
 
                         _systemLogging.Info($"Retrieving document chunk: {startRange} - {endRange}");
 
-                        allData.AddRange(await _localApplicationHub.DownloadDocumentChunk(applicationId, document, startRange, endRange));
+                        allData.AddRange(await _localApplicationHub.SendDocumentChunk(applicationId, document, startRange, endRange));
 
                         _systemLogging.Info($"Retrived document chunk number {i}");
                     }
 
                     _systemLogging.Info("Sending chunked data");
 
-                    return StatusCode(200, allData.ToArray());
+                    return new DocumentResponse()
+                    {
+                        DocumentData = allData.ToArray()
+                    };
                 }
                 else
                 {
-                    return StatusCode(200, await _localApplicationHub.DownloadDocument(applicationId, document));
+                    return new DocumentResponse()
+                    {
+                        DocumentData = await _localApplicationHub.SendDocument(applicationId, document)
+                    };
                 }
             }
-            else
-            {
-                return StatusCode(404, $"Unable to find the selected file");
-            }*/
 
             return null;
         }
