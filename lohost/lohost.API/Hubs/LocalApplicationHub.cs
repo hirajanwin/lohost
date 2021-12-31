@@ -74,7 +74,7 @@ namespace lohost.API.Hubs
             }
         }
 
-        public void ItemRetrieved(string transactionId, ExternalDocument document)
+        public void DocumentRetrieved(string transactionId, ExternalDocument document)
         {
             ExternalDocumentRequest.EventOccured(new ExternalDocumentResp()
             {
@@ -124,13 +124,13 @@ namespace lohost.API.Hubs
             });
         }
 
-        public async Task<byte[]> SendDocument(string applicationId, string fileId)
+        public async Task<byte[]> SendDocument(string applicationId, string document)
         {
             if (_ConnectedApplications.ContainsKey(applicationId))
             {
                 ByteArrayRequest byteArrayRequest = new ByteArrayRequest();
 
-                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("DownloadDocument", byteArrayRequest.TransactionId, fileId);
+                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("SendDocument", byteArrayRequest.TransactionId, document);
 
                 byte[] fileData = byteArrayRequest.Execute();
 
@@ -166,7 +166,7 @@ namespace lohost.API.Hubs
             {
                 ByteArrayRequest byteArrayRequest = new ByteArrayRequest();
 
-                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("DownloadDocumentChunk", byteArrayRequest.TransactionId, document, startRange, endRange);
+                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("SendDocumentChunk", byteArrayRequest.TransactionId, document, startRange, endRange);
 
                 byte[] fileData = byteArrayRequest.Execute();
 

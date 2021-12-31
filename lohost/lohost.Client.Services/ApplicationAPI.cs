@@ -1,5 +1,6 @@
 ﻿using lohost.Client.Logging;
 using lohost.Client.Models;
+using lohost.Models;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace lohost.Client.Services
@@ -51,7 +52,9 @@ namespace lohost.Client.Services
                 if (_reconnect) await ConnectSignalR();
             };
 
-            _apiHubConnection.On("GetSendingChunks", async (string transactionId, string fileId) => await GetSendingChunks(transactionId, fileId));
+            _apiHubConnection.On("GetItem", async (string transactionId, string document) => await GetDocument(transactionId, document));
+
+            _apiHubConnection.On("GetChunkSize", async (string transactionId) => await GetChunkSize(transactionId));
 
             _apiHubConnection.On("SendDocument", async (string transactionId, string fileId) => await SendDocument(transactionId, fileId));
 
@@ -93,29 +96,49 @@ namespace lohost.Client.Services
             await _apiHubConnection.StopAsync();
         }
 
-        public async Task GetSendingChunks(string transactionId, string fileId)
+        public async Task GetDocument(string transactionId, string document)
         {
-            _logger.Info($"Valid token received to send document chunk count");
+            _logger.Info($"Request received to get document");
 
             string applicationFolder = _applicationData.GetApplicationFolder();
 
             if (!string.IsNullOrEmpty(applicationFolder))
             {
-                string filePath = Path.Join(applicationFolder, fileId.Replace(':', '\\'));
+                string filePath = Path.Join(applicationFolder, document.Replace(':', '\\'));
+                if (File.Exists(filePath))
+                {
+                    _logger.Info($"Getting file information for {filePath}");
 
-                _logger.Info($"Checking file from {filePath}");
+                    FileInfo fi = new FileInfo(filePath);
 
-                FileInfo file = new FileInfo(filePath);
+                    await _apiHubConnection.InvokeAsync("DocumentRetrieved", transactionId, new ExternalDocument()
+                    {
+                        Path = document,
+                        Size = fi.Length
+                    });
+                }
+                else
+                {
+                    _logger.Info($"Unable to find file {filePath}");
 
-                await _apiHubConnection.InvokeAsync("NumberOfSendingChunks", transactionId, (int)Math.Ceiling((double)file.Length / CHUNK_SIZE));
+                    await _apiHubConnection.InvokeAsync("DocumentRetrieved", transactionId, null);
+                }
             }
             else
             {
-                await _apiHubConnection.InvokeAsync("NumberOfSendingChunks", transactionId, null);
+                _logger.Info($"Unable to find application folder");
+
+                await _apiHubConnection.InvokeAsync("DocumentRetrieved", transactionId, null);
             }
         }
 
-        public async Task SendDocument(string transactionId, string fileId)
+
+        public async Task GetChunkSize(string transactionId)
+        {
+            await _apiHubConnection.InvokeAsync("ChunkSize", transactionId, CHUNK_SIZE);
+        }
+
+        public async Task SendDocument(string transactionId, string document)
         {
             _logger.Info($"Request found to send document");
 
@@ -123,7 +146,7 @@ namespace lohost.Client.Services
 
             if (!string.IsNullOrEmpty(applicationFolder))
             {
-                string filePath = Path.Join(applicationFolder, fileId.Replace(':', '\\'));
+                string filePath = Path.Join(applicationFolder, document.Replace(':', '\\'));
 
                 _logger.Info($"Reading file from {filePath}");
 
@@ -160,6 +183,8 @@ namespace lohost.Client.Services
             }
             else
             {
+                _logger.Info($"Unable to find application folder");
+
                 await _apiHubConnection.InvokeAsync("SentDocument", transactionId, null);
             }
         }
