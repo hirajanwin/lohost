@@ -125,7 +125,7 @@ namespace lohost.Client.Services
 
         public async Task GetDocument(string transactionId, string document)
         {
-            _logger.Info($"Request received to get document");
+            _logger.Info($"Request received to get {document}");
 
             string applicationFolder = _applicationData.GetApplicationFolder();
 
@@ -134,7 +134,7 @@ namespace lohost.Client.Services
                 string filePath = Path.Join(applicationFolder, document.Replace(':', '\\'));
                 if (File.Exists(filePath))
                 {
-                    _logger.Info($"Getting file information for {filePath}");
+                    _logger.Debug($"Getting file information for {filePath}");
 
                     FileInfo fi = new FileInfo(filePath);
 
@@ -146,14 +146,14 @@ namespace lohost.Client.Services
                 }
                 else
                 {
-                    _logger.Info($"Unable to find file {filePath}");
+                    _logger.Error($"Unable to find file {filePath}");
 
                     await _apiHubConnection.InvokeAsync("DocumentRetrieved", transactionId, null);
                 }
             }
             else
             {
-                _logger.Info($"Unable to find application folder");
+                _logger.Error($"Unable to find application folder");
 
                 await _apiHubConnection.InvokeAsync("DocumentRetrieved", transactionId, null);
             }
@@ -167,7 +167,7 @@ namespace lohost.Client.Services
 
         public async Task SendDocument(string transactionId, string document)
         {
-            _logger.Info($"Request found to send document");
+            _logger.Info($"Request received to send {document}");
 
             string applicationFolder = _applicationData.GetApplicationFolder();
 
@@ -175,15 +175,15 @@ namespace lohost.Client.Services
             {
                 string filePath = Path.Join(applicationFolder, document.Replace(':', '\\'));
 
-                _logger.Info($"Reading file from {filePath}");
+                _logger.Debug($"Reading file from {filePath}");
 
                 byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
 
-                _logger.Info($"File read from {filePath}: {fileBytes.Length}");
+                _logger.Debug($"File read from {filePath}: {fileBytes.Length}");
 
                 int noOfChunks = (int)Math.Ceiling((double)fileBytes.Length / CHUNK_SIZE);
 
-                _logger.Info($"Number of chunks: {noOfChunks}");
+                _logger.Debug($"Number of chunks: {noOfChunks}");
 
                 if (noOfChunks > 1)
                 {
@@ -191,12 +191,12 @@ namespace lohost.Client.Services
 
                     for (int i = 0; i < noOfChunks; i++)
                     {
-                        _logger.Info($"Reading chung no: {i}");
+                        _logger.Debug($"Reading chung no: {i}");
 
                         int amountToTake = fileBytes.Length - (i * CHUNK_SIZE);
                         if (amountToTake > CHUNK_SIZE) amountToTake = CHUNK_SIZE;
 
-                        _logger.Info($"Chunk Size: {amountToTake}");
+                        _logger.Debug($"Chunk Size: {amountToTake}");
 
                         allBytes.AddRange(fileBytes.Skip(i * CHUNK_SIZE).Take(amountToTake));
                     }
@@ -210,7 +210,7 @@ namespace lohost.Client.Services
             }
             else
             {
-                _logger.Info($"Unable to find application folder");
+                _logger.Error($"Unable to find application folder");
 
                 await _apiHubConnection.InvokeAsync("SentDocument", transactionId, null);
             }
@@ -218,7 +218,7 @@ namespace lohost.Client.Services
 
         public async Task SendDocumentChunk(string transactionId, string document, long startRange, long endRange)
         {
-            _logger.Info($"Request found to send document chunk");
+            _logger.Info($"Request received to send chunk for {document}");
 
             string applicationFolder = _applicationData.GetApplicationFolder();
 
@@ -236,33 +236,37 @@ namespace lohost.Client.Services
                     br.Read(fileBytes, 0, readCount);
                 }
 
-                _logger.Info($"File read from {filePath}: {fileBytes.Length}");
+                _logger.Debug($"File read from {filePath}: {fileBytes.Length}");
 
                 int noOfChunks = (int)Math.Ceiling((double)fileBytes.Length / CHUNK_SIZE);
 
-                _logger.Info($"Number of chunks: {noOfChunks}");
+                _logger.Debug($"Number of chunks: {noOfChunks}");
 
                 if (noOfChunks > 1)
                 {
                     for (int i = 0; i < noOfChunks; i++)
                     {
-                        _logger.Info($"Sending chung no: {i}");
+                        _logger.Debug($"Sending chung no: {i+1}");
 
                         int amountToTake = fileBytes.Length - (i * CHUNK_SIZE);
                         if (amountToTake > CHUNK_SIZE) amountToTake = CHUNK_SIZE;
 
-                        _logger.Info($"Chunk Size: {amountToTake}");
+                        _logger.Debug($"Chunk Size: {amountToTake}");
 
                         await _apiHubConnection.InvokeAsync("SentDocumentChunk", transactionId, i, Convert.ToBase64String(fileBytes.Skip(i * CHUNK_SIZE).Take(amountToTake).ToArray()), (i == noOfChunks - 1));
                     }
                 }
                 else
                 {
+                    _logger.Debug($"Sending chung no: {1}");
+
                     await _apiHubConnection.InvokeAsync("SentDocumentChunk", transactionId, 0, Convert.ToBase64String(fileBytes), true);
                 }
             }
             else
             {
+                _logger.Error($"Unable to find application folder");
+
                 await _apiHubConnection.InvokeAsync("SentDocumentChunk", transactionId, 0, null, true);
             }
         }

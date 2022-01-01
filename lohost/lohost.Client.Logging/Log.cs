@@ -12,9 +12,14 @@ namespace lohost.Client.Logging
         {
             _logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
-            .WriteTo.Console()
+            .WriteTo.Console(Serilog.Events.LogEventLevel.Information)
             .WriteTo.File($"{path}\\logfile.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
             .CreateLogger();
+        }
+
+        public void Debug(string message)
+        {
+            _logger.Debug(message);
         }
 
         public void Info(string message)
