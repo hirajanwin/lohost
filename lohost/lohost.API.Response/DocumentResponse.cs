@@ -8,7 +8,19 @@
 
         public IResponse GetResponse()
         {
-            return new HTMLResponse(DocumentData);
+            string[] pathParts = DocumentPath.Split('/');
+
+            string ext = Path.GetExtension(pathParts.Last());
+
+            switch (ext.ToLower())
+            {
+                case ".html":
+                    return new HTMLResponse(DocumentData);
+                case ".css":
+                    return new CSSResponse(DocumentData);
+                default:
+                    return new HTMLResponse(DocumentData);
+            }
         }
     }
 }
