@@ -1,29 +1,28 @@
-﻿using System.Text;
-
-namespace lohost.API.Response
+﻿namespace lohost.API.Response
 {
-    public class HTMLResponse : IResponse
+    public class JPGResponse : IResponse
     {
         private byte[] _data;
 
-        public HTMLResponse(byte[] data)
+        public JPGResponse(byte[] data)
         {
             _data = data;
         }
 
         public string GetResultType()
         {
-            return "text";
+            return "file";
         }
 
         public string GetContentType()
         {
-            return "text/html";
+            
+            return "image/jpeg";
         }
 
         public object GetContent()
         {
-            return Encoding.Default.GetString(_data);
+            return _data;
         }
     }
 }

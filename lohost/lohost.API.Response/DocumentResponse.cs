@@ -20,6 +20,8 @@
                     return new CSSResponse(DocumentData);
                 case ".js":
                     return new JavaScriptResponse(DocumentData);
+                case ".jpg":
+                    return new JPGResponse(DocumentData);
                 default:
                     return new HTMLResponse(DocumentData);
             }

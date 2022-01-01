@@ -11,6 +11,11 @@ namespace lohost.API.Response
             _data = data;
         }
 
+        public string GetResultType()
+        {
+            return "text";
+        }
+
         public string GetContentType()
         {
             return "text/css";

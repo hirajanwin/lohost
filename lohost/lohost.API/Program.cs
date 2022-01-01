@@ -2,6 +2,7 @@ using lohost.API.Controllers;
 using lohost.API.Hubs;
 using lohost.API.Response;
 using lohost.Logging;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,9 +49,15 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
         {
             IResponse response = documentResponse.GetResponse();
 
-            httpContext.Response.ContentType = response.GetContentType();
-
-            return response.GetContent();
+            switch (response.GetResultType())
+            {
+                case "text":
+                    return Results.Text((string)response.GetContent(), response.GetContentType());
+                case "file":
+                    return Results.File((byte[])response.GetContent(), response.GetContentType());
+                default:
+                    return null;
+            }
         }
         else
         {
