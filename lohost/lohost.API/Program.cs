@@ -43,10 +43,16 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
         LocalApplication localApplication = new LocalApplication(systemLogging, localIntegrationHub);
 
         DocumentResponse documentResponse = await localApplication.GetDocument(applicationId, queryPath);
+
+        httpContext.Response.ContentType = "text/html";
+        
+        return System.Text.Encoding.Default.GetString(documentResponse.DocumentData);
     }
     else
     {
         Console.WriteLine("local");
+
+        return null;
     }
 });
 

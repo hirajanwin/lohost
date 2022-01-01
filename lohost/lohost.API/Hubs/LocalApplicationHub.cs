@@ -166,7 +166,7 @@ namespace lohost.API.Hubs
             {
                 ByteArrayRequest byteArrayRequest = new ByteArrayRequest();
 
-                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("SendDocumentChunk", byteArrayRequest.TransactionId, document, startRange, endRange);
+                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("DownloadDocumentChunk", byteArrayRequest.TransactionId, document, startRange, endRange);
 
                 byte[] fileData = byteArrayRequest.Execute();
 
