@@ -9,7 +9,7 @@ namespace lohost.API.Hubs
     [HubName("LocalApplicationHub")]
     public class LocalApplicationHub : Hub
     {
-        private static Dictionary<string, string> _ConnectedApplications = new Dictionary<string, string>();
+        private static Dictionary<string, ApplicationConnection> _ConnectedApplications = new Dictionary<string, ApplicationConnection>();
 
         private SystemLogging _systemLogging;
 
@@ -31,7 +31,23 @@ namespace lohost.API.Hubs
 
             if (!string.IsNullOrEmpty(applicationId))
             {
-                _ConnectedApplications[applicationId] = Context.ConnectionId;
+                string applicationKey = httpContext.Request.Query["applicationKey"];
+
+                if (string.IsNullOrEmpty(applicationKey))
+                {
+                    _ConnectedApplications[applicationId] = new ApplicationConnection()
+                    {
+                        ConnectionId = Context.ConnectionId,
+                    };
+                }
+                else
+                {
+                    _ConnectedApplications[applicationId] = new ApplicationConnection()
+                    {
+                        ConnectionId = Context.ConnectionId,
+                        Key = applicationKey
+                    };
+                }
 
                 await base.OnConnectedAsync();
             }
@@ -39,11 +55,15 @@ namespace lohost.API.Hubs
 
         public override async Task OnDisconnectedAsync(Exception ex)
         {
-            if (_ConnectedApplications.ContainsValue(Context.ConnectionId))
+            if (_ConnectedApplications.Any(ca => ca.Value.ConnectionId == Context.ConnectionId))
             {
-                foreach (var applicationConnection in _ConnectedApplications.Where(kvp => kvp.Value == Context.ConnectionId).ToList())
+                foreach (var applicationConnection in _ConnectedApplications.Where(kvp => kvp.Value.ConnectionId == Context.ConnectionId).ToList())
                 {
-                    _ConnectedApplications.Remove(applicationConnection.Key);
+                    if (string.IsNullOrEmpty(applicationConnection.Value.Key))
+                    {
+                        // There wasn't a key specified to the application, so remove
+                        _ConnectedApplications.Remove(applicationConnection.Key);
+                    }
                 }
             }
 
@@ -55,7 +75,7 @@ namespace lohost.API.Hubs
             {
                 ExternalDocumentRequest externalDocumentRequest = new ExternalDocumentRequest();
 
-                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("GetDocument", externalDocumentRequest.TransactionId, document);
+                await Clients.Client(_ConnectedApplications[applicationId].ConnectionId).SendAsync("GetDocument", externalDocumentRequest.TransactionId, document);
 
                 ExternalDocument file = externalDocumentRequest.Execute();
 
@@ -91,7 +111,7 @@ namespace lohost.API.Hubs
                 {
                     IntRequest intRequest = new IntRequest();
 
-                    await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("GetChunkSize", intRequest.TransactionId);
+                    await Clients.Client(_ConnectedApplications[applicationId].ConnectionId).SendAsync("GetChunkSize", intRequest.TransactionId);
 
                     int? chunkSize = intRequest.Execute();
 
@@ -130,7 +150,7 @@ namespace lohost.API.Hubs
             {
                 ByteArrayRequest byteArrayRequest = new ByteArrayRequest();
 
-                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("SendDocument", byteArrayRequest.TransactionId, document);
+                await Clients.Client(_ConnectedApplications[applicationId].ConnectionId).SendAsync("SendDocument", byteArrayRequest.TransactionId, document);
 
                 byte[] fileData = byteArrayRequest.Execute();
 
@@ -166,7 +186,7 @@ namespace lohost.API.Hubs
             {
                 ByteArrayRequest byteArrayRequest = new ByteArrayRequest();
 
-                await Clients.Client(_ConnectedApplications[applicationId]).SendAsync("DownloadDocumentChunk", byteArrayRequest.TransactionId, document, startRange, endRange);
+                await Clients.Client(_ConnectedApplications[applicationId].ConnectionId).SendAsync("DownloadDocumentChunk", byteArrayRequest.TransactionId, document, startRange, endRange);
 
                 byte[] fileData = byteArrayRequest.Execute();
 
