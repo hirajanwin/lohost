@@ -52,7 +52,7 @@ namespace lohost.Client.Services
                 if (_reconnect) await ConnectSignalR();
             };
 
-            _apiHubConnection.On("GetItem", async (string transactionId, string document) => await GetDocument(transactionId, document));
+            _apiHubConnection.On("GetDocument", async (string transactionId, string document) => await GetDocument(transactionId, document));
 
             _apiHubConnection.On("GetChunkSize", async (string transactionId) => await GetChunkSize(transactionId));
 
