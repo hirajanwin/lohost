@@ -1,6 +1,7 @@
 ﻿using lohost.API.Request;
 using lohost.Logging;
 using lohost.Models;
+using System.Runtime.Caching;
 using Microsoft.AspNet.SignalR.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
@@ -10,6 +11,11 @@ namespace lohost.API.Hubs
     public class LocalApplicationHub : Hub
     {
         private static Dictionary<string, ApplicationConnection> _ConnectedApplications = new Dictionary<string, ApplicationConnection>();
+
+        private static readonly CacheItemPolicy _CachedJobScriptPolicy = new CacheItemPolicy
+        {
+            SlidingExpiration = TimeSpan.FromMinutes(10)
+        };
 
         private SystemLogging _systemLogging;
 
@@ -23,35 +29,64 @@ namespace lohost.API.Hubs
             var httpContext = Context.GetHttpContext();
 
             string applicationId = httpContext.Request.Query["applicationId"];
+            string applicationKey = httpContext.Request.Query["applicationKey"];
 
             if (!string.IsNullOrEmpty(applicationId))
             {
                 if (!_ConnectedApplications.ContainsKey(applicationId))
                 {
-                    string applicationKey = httpContext.Request.Query["applicationKey"];
+                    MemoryCache connectedApplicationLockCache = MemoryCache.Default;
 
-                    if (string.IsNullOrEmpty(applicationKey))
+                    if (connectedApplicationLockCache.Contains(applicationId))
                     {
-                        _ConnectedApplications[applicationId] = new ApplicationConnection()
+                        ApplicationConnection applicationConnetion = (ApplicationConnection)connectedApplicationLockCache.Get(applicationId);
+
+                        if (!string.IsNullOrEmpty(applicationKey) && (applicationConnetion.Key == applicationKey))
                         {
-                            ConnectionId = Context.ConnectionId,
-                        };
+                            _ConnectedApplications[applicationId] = new ApplicationConnection()
+                            {
+                                ConnectionId = Context.ConnectionId,
+                                Key = applicationKey
+                            };
+
+                            connectedApplicationLockCache.Remove(applicationId);
+
+                            await base.OnConnectedAsync();
+                        }
+                        else
+                        {
+                            Context.Abort();
+                        }
                     }
                     else
                     {
-                        _ConnectedApplications[applicationId] = new ApplicationConnection()
+                        if (string.IsNullOrEmpty(applicationKey))
                         {
-                            ConnectionId = Context.ConnectionId,
-                            Key = applicationKey
-                        };
-                    }
+                            _ConnectedApplications[applicationId] = new ApplicationConnection()
+                            {
+                                ConnectionId = Context.ConnectionId,
+                            };
+                        }
+                        else
+                        {
+                            _ConnectedApplications[applicationId] = new ApplicationConnection()
+                            {
+                                ConnectionId = Context.ConnectionId,
+                                Key = applicationKey
+                            };
+                        }
 
-                    await base.OnConnectedAsync();
+                        await base.OnConnectedAsync();
+                    }
                 }
                 else
                 {
                     Context.Abort();
                 }
+            }
+            else
+            {
+                Context.Abort();
             }
         }
 
@@ -61,11 +96,16 @@ namespace lohost.API.Hubs
             {
                 foreach (var applicationConnection in _ConnectedApplications.Where(kvp => kvp.Value.ConnectionId == Context.ConnectionId).ToList())
                 {
-                    if (string.IsNullOrEmpty(applicationConnection.Value.Key))
+                    if (!string.IsNullOrEmpty(applicationConnection.Value.Key))
                     {
-                        // There wasn't a key specified to the application, so remove
-                        _ConnectedApplications.Remove(applicationConnection.Key);
+                        MemoryCache connectedApplicationLockCache = MemoryCache.Default;
+
+                        if (connectedApplicationLockCache.Contains(applicationConnection.Key)) connectedApplicationLockCache.Remove(applicationConnection.Key);
+
+                        connectedApplicationLockCache.Add(applicationConnection.Key, applicationConnection.Value, _CachedJobScriptPolicy);
                     }
+
+                    _ConnectedApplications.Remove(applicationConnection.Key);
                 }
             }
 
