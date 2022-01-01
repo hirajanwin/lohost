@@ -37,30 +37,42 @@
 
         public string GetApplicationFolder()
         {
+            string applicationFolder;
+
             try
             {
                 Path.GetFullPath(ApplicationFolder);
 
-                return ApplicationFolder;
+                applicationFolder = ApplicationFolder;
             }
             catch (Exception)
             {
-                return Path.Join(GetExecutingLocation(), ApplicationFolder);
+                applicationFolder = Path.Join(GetExecutingLocation(), ApplicationFolder);
             }
+
+            if (!Directory.Exists(applicationFolder)) Directory.CreateDirectory(applicationFolder);
+
+            return applicationFolder;
         }
 
         public string GetLogsFolder()
         {
+            string logsFolder;
+
             try
             {
                 Path.GetFullPath(LogsFolder);
 
-                return LogsFolder;
+                logsFolder = LogsFolder;
             }
             catch (Exception)
             {
-                return Path.Join(GetExecutingLocation(), LogsFolder);
+                logsFolder = Path.Join(GetExecutingLocation(), LogsFolder);
             }
+
+            if (!Directory.Exists(logsFolder)) Directory.CreateDirectory(logsFolder);
+
+            return logsFolder;
         }
     }
 }
