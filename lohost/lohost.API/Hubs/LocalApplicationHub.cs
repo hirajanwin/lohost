@@ -18,11 +18,6 @@ namespace lohost.API.Hubs
             _systemLogging = systemLogging;
         }
 
-        public bool IsConnected(string applicationId)
-        {
-            return _ConnectedApplications.ContainsKey(applicationId);
-        }    
-
         public override async Task OnConnectedAsync()
         {
             var httpContext = Context.GetHttpContext();
@@ -31,25 +26,32 @@ namespace lohost.API.Hubs
 
             if (!string.IsNullOrEmpty(applicationId))
             {
-                string applicationKey = httpContext.Request.Query["applicationKey"];
-
-                if (string.IsNullOrEmpty(applicationKey))
+                if (!_ConnectedApplications.ContainsKey(applicationId))
                 {
-                    _ConnectedApplications[applicationId] = new ApplicationConnection()
+                    string applicationKey = httpContext.Request.Query["applicationKey"];
+
+                    if (string.IsNullOrEmpty(applicationKey))
                     {
-                        ConnectionId = Context.ConnectionId,
-                    };
+                        _ConnectedApplications[applicationId] = new ApplicationConnection()
+                        {
+                            ConnectionId = Context.ConnectionId,
+                        };
+                    }
+                    else
+                    {
+                        _ConnectedApplications[applicationId] = new ApplicationConnection()
+                        {
+                            ConnectionId = Context.ConnectionId,
+                            Key = applicationKey
+                        };
+                    }
+
+                    await base.OnConnectedAsync();
                 }
                 else
                 {
-                    _ConnectedApplications[applicationId] = new ApplicationConnection()
-                    {
-                        ConnectionId = Context.ConnectionId,
-                        Key = applicationKey
-                    };
+                    Context.Abort();
                 }
-
-                await base.OnConnectedAsync();
             }
         }
 

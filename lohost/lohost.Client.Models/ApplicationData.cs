@@ -23,6 +23,13 @@
 
         public string ExternalAPI { get; set; }
 
+        public string GetRegisteredAddress()
+        {
+            if (ExternalAPI.StartsWith("https://")) return $"https://{ApplicationId}.{ExternalAPI.Substring("https://".Length)}";
+            else return $"http://{ApplicationId}.{ExternalAPI.Substring("http://".Length)}";
+
+        }
+
         public string GetExecutingLocation()
         {
             if (string.IsNullOrEmpty(ExecutingLocation))

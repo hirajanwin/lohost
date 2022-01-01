@@ -15,6 +15,7 @@ namespace lohost.Client.Services
 
         private HubConnection _apiHubConnection;
 
+        private bool _handshakeComplete = false;
         private bool _reconnect = false;
 
         public ApplicationAPI(Log log, ApplicationData applicationData)
@@ -35,7 +36,7 @@ namespace lohost.Client.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error("Error stopping hub connection", ex);
+                    _logger.Error($"Error stopping connction to {_applicationData.GetRegisteredAddress()}", ex);
                 }
 
                 _apiHubConnection = null;
@@ -45,9 +46,18 @@ namespace lohost.Client.Services
 
             _apiHubConnection.Closed += async (error) =>
             {
-                _logger.Error("SignalR connection aborted", error);
+                if (_handshakeComplete)
+                {
+                    _logger.Error("SignalR connection aborted", error);
 
-                await Task.Delay(1000);
+                    await Task.Delay(1000);
+                }
+                else
+                {
+                    _logger.Info($"Unable to register this client to {_applicationData.GetRegisteredAddress()}, waiting for it to become available");
+
+                    await Task.Delay(5000);
+                }
 
                 if (_reconnect) await ConnectSignalR();
             };
@@ -71,7 +81,7 @@ namespace lohost.Client.Services
 
             try
             {
-                _logger.Info("Starting connection");
+                _logger.Info($"Attempting to register this client as {_applicationData.GetRegisteredAddress()}");
 
                 await _apiHubConnection.StartAsync();
 
@@ -79,16 +89,24 @@ namespace lohost.Client.Services
             }
             catch (Exception ex)
             {
-                _logger.Info($"Error connecting to hub: {ex.Message}");
+                _logger.Info($"Error connecting {_applicationData.GetRegisteredAddress()}: {ex.Message}");
             }
 
             if (connected)
             {
-                _logger.Info("Connection Started, checking handshake");
+                try
+                {
+                    string response = await _apiHubConnection.InvokeAsync<string>("Handshake", "1234");
 
-                string response = await _apiHubConnection.InvokeAsync<string>("Handshake", "1234");
+                    _handshakeComplete = true;
 
-                _logger.Info("Handshake response: " + response);
+                    _logger.Info("Connection made, handshake complete");
+
+                    _logger.Info($"Your website should now be available at: {_applicationData.GetRegisteredAddress()}");
+                }
+                catch (Exception)
+                {
+                }
             }
             else
             {
