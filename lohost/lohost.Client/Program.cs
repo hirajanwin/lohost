@@ -1,8 +1,6 @@
-using lohost.Client.Logging;
 using lohost.Client.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.IO;
 
 namespace lohost.Client
 {
