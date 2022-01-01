@@ -1,6 +1,6 @@
 ﻿using lohost.Models;
 
-namespace lohost.API.Hubs.RequestTypes
+namespace lohost.API.Request
 {
     public class ExternalDocumentRequest
     {

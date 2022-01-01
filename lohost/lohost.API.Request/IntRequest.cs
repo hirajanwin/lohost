@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading;
 
-namespace lohost.API.Hubs.RequestTypes
+namespace lohost.API.Request
 {
-    public class BoolRequest
+    public class IntRequest
     {
-        public static event EventHandler<BoolResp> BoolResponse = delegate { };
+        public static event EventHandler<IntResp> IntResponse = delegate { };
 
         private AutoResetEvent _messageReceived = new AutoResetEvent(false);
-        private bool? data = null;
+        private int? data = null;
 
         private int _defaultTimeout = 10 * 1000;
 
@@ -17,20 +17,20 @@ namespace lohost.API.Hubs.RequestTypes
             get; set;
         }
 
-        public BoolRequest()
+        public IntRequest()
         {
             TransactionId = System.Guid.NewGuid().ToString();
         }
 
-        public bool? Execute()
+        public int? Execute()
         {
-            BoolResponse += Handler;
+            IntResponse += Handler;
 
             try
             {
                 bool responseReceived = this._messageReceived.WaitOne(_defaultTimeout);
 
-                BoolResponse -= Handler;
+                IntResponse -= Handler;
 
                 if (responseReceived)
                 {
@@ -43,32 +43,32 @@ namespace lohost.API.Hubs.RequestTypes
             }
             catch (Exception)
             {
-                BoolResponse -= Handler;
+                IntResponse -= Handler;
 
                 throw;
             }
         }
 
-        private void Handler(object sender, BoolResp args)
+        private void Handler(object sender, IntResp args)
         {
             if (args.TransactionID == TransactionId)
             {
-                data = args.Bool;
+                data = args.Int;
 
                 this._messageReceived.Set();
             }
         }
 
-        public static void EventOccured(BoolResp BoolResp)
+        public static void EventOccured(IntResp IntResp)
         {
-            BoolResponse?.Invoke(null, BoolResp);
+            IntResponse?.Invoke(null, IntResp);
         }
     }
 
-    public class BoolResp : EventArgs
+    public class IntResp : EventArgs
     {
         public string TransactionID { get; set; }
 
-        public bool? Bool { get; set; }
+        public int? Int { get; set; }
     }
 }

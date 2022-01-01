@@ -13,11 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Client.Logging", "lo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Logging", "lohost.Logging\lohost.Logging.csproj", "{699D49A5-B7BD-4846-8ABA-108764F67FC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.API", "lohost.API\lohost.API.csproj", "{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.API", "lohost.API\lohost.API.csproj", "{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.API.Models", "lohost.API.Models\lohost.API.Models.csproj", "{80BC5D31-C007-4F33-B549-FAFBE7CC7537}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Models", "lohost.Models\lohost.Models.csproj", "{A193F9CB-6F4A-4B00-9D24-C452FDB55EE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.Models", "lohost.Models\lohost.Models.csproj", "{A193F9CB-6F4A-4B00-9D24-C452FDB55EE5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.API.Request", "lohost.API.Request\lohost.API.Request.csproj", "{7E548566-A48B-4700-8898-016AE8E68BB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.API.Response", "lohost.API.Response\lohost.API.Response.csproj", "{76479F27-F35F-46B1-AE63-989E0BDC5DC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,14 +51,18 @@ Global
 		{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{80BC5D31-C007-4F33-B549-FAFBE7CC7537}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{80BC5D31-C007-4F33-B549-FAFBE7CC7537}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{80BC5D31-C007-4F33-B549-FAFBE7CC7537}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{80BC5D31-C007-4F33-B549-FAFBE7CC7537}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A193F9CB-6F4A-4B00-9D24-C452FDB55EE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A193F9CB-6F4A-4B00-9D24-C452FDB55EE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A193F9CB-6F4A-4B00-9D24-C452FDB55EE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A193F9CB-6F4A-4B00-9D24-C452FDB55EE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E548566-A48B-4700-8898-016AE8E68BB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E548566-A48B-4700-8898-016AE8E68BB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E548566-A48B-4700-8898-016AE8E68BB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E548566-A48B-4700-8898-016AE8E68BB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76479F27-F35F-46B1-AE63-989E0BDC5DC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76479F27-F35F-46B1-AE63-989E0BDC5DC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76479F27-F35F-46B1-AE63-989E0BDC5DC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76479F27-F35F-46B1-AE63-989E0BDC5DC1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

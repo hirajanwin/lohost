@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading;
 
-namespace lohost.API.Hubs.RequestTypes
+namespace lohost.API.Request
 {
-    public class StringRequest
+    public class BoolRequest
     {
-        public static event EventHandler<StringResp> StringResponse = delegate { };
+        public static event EventHandler<BoolResp> BoolResponse = delegate { };
 
         private AutoResetEvent _messageReceived = new AutoResetEvent(false);
-        private string data = null;
+        private bool? data = null;
 
         private int _defaultTimeout = 10 * 1000;
 
@@ -17,20 +17,20 @@ namespace lohost.API.Hubs.RequestTypes
             get; set;
         }
 
-        public StringRequest()
+        public BoolRequest()
         {
             TransactionId = System.Guid.NewGuid().ToString();
         }
 
-        public string Execute()
+        public bool? Execute()
         {
-            StringResponse += Handler;
+            BoolResponse += Handler;
 
             try
             {
                 bool responseReceived = this._messageReceived.WaitOne(_defaultTimeout);
 
-                StringResponse -= Handler;
+                BoolResponse -= Handler;
 
                 if (responseReceived)
                 {
@@ -43,32 +43,32 @@ namespace lohost.API.Hubs.RequestTypes
             }
             catch (Exception)
             {
-                StringResponse -= Handler;
+                BoolResponse -= Handler;
 
                 throw;
             }
         }
 
-        private void Handler(object sender, StringResp args)
+        private void Handler(object sender, BoolResp args)
         {
             if (args.TransactionID == TransactionId)
             {
-                data = args.String;
+                data = args.Bool;
 
                 this._messageReceived.Set();
             }
         }
 
-        public static void EventOccured(StringResp stringResp)
+        public static void EventOccured(BoolResp BoolResp)
         {
-            StringResponse?.Invoke(null, stringResp);
+            BoolResponse?.Invoke(null, BoolResp);
         }
     }
 
-    public class StringResp : EventArgs
+    public class BoolResp : EventArgs
     {
         public string TransactionID { get; set; }
 
-        public string String { get; set; }
+        public bool? Bool { get; set; }
     }
 }

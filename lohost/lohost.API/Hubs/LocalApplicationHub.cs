@@ -1,4 +1,4 @@
-﻿using lohost.API.Hubs.RequestTypes;
+﻿using lohost.API.Request;
 using lohost.Logging;
 using lohost.Models;
 using Microsoft.AspNet.SignalR.Hubs;

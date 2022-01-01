@@ -1,6 +1,6 @@
 using lohost.API.Controllers;
 using lohost.API.Hubs;
-using lohost.API.Models;
+using lohost.API.Response;
 using lohost.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,9 +44,20 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
 
         DocumentResponse documentResponse = await localApplication.GetDocument(applicationId, queryPath);
 
-        httpContext.Response.ContentType = "text/html";
-        
-        return System.Text.Encoding.Default.GetString(documentResponse.DocumentData);
+        if (documentResponse != null)
+        {
+            IResponse response = documentResponse.GetResponse();
+
+            httpContext.Response.ContentType = response.GetContentType();
+
+            return response.GetContent();
+        }
+        else
+        {
+            Console.WriteLine("missing");
+
+            return null;
+        }
     }
     else
     {

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading;
 
-namespace lohost.API.Hubs.RequestTypes
+namespace lohost.API.Request
 {
-    public class IntRequest
+    public class StringRequest
     {
-        public static event EventHandler<IntResp> IntResponse = delegate { };
+        public static event EventHandler<StringResp> StringResponse = delegate { };
 
         private AutoResetEvent _messageReceived = new AutoResetEvent(false);
-        private int? data = null;
+        private string data = null;
 
         private int _defaultTimeout = 10 * 1000;
 
@@ -17,20 +17,20 @@ namespace lohost.API.Hubs.RequestTypes
             get; set;
         }
 
-        public IntRequest()
+        public StringRequest()
         {
             TransactionId = System.Guid.NewGuid().ToString();
         }
 
-        public int? Execute()
+        public string Execute()
         {
-            IntResponse += Handler;
+            StringResponse += Handler;
 
             try
             {
                 bool responseReceived = this._messageReceived.WaitOne(_defaultTimeout);
 
-                IntResponse -= Handler;
+                StringResponse -= Handler;
 
                 if (responseReceived)
                 {
@@ -43,32 +43,32 @@ namespace lohost.API.Hubs.RequestTypes
             }
             catch (Exception)
             {
-                IntResponse -= Handler;
+                StringResponse -= Handler;
 
                 throw;
             }
         }
 
-        private void Handler(object sender, IntResp args)
+        private void Handler(object sender, StringResp args)
         {
             if (args.TransactionID == TransactionId)
             {
-                data = args.Int;
+                data = args.String;
 
                 this._messageReceived.Set();
             }
         }
 
-        public static void EventOccured(IntResp IntResp)
+        public static void EventOccured(StringResp stringResp)
         {
-            IntResponse?.Invoke(null, IntResp);
+            StringResponse?.Invoke(null, stringResp);
         }
     }
 
-    public class IntResp : EventArgs
+    public class StringResp : EventArgs
     {
         public string TransactionID { get; set; }
 
-        public int? Int { get; set; }
+        public string String { get; set; }
     }
 }

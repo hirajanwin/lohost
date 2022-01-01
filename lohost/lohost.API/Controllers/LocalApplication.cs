@@ -1,5 +1,5 @@
 ﻿using lohost.API.Hubs;
-using lohost.API.Models;
+using lohost.API.Response;
 using lohost.Logging;
 using lohost.Models;
 
@@ -54,6 +54,7 @@ namespace lohost.API.Controllers
 
                     return new DocumentResponse()
                     {
+                        DocumentPath = document,
                         DocumentData = allData.ToArray()
                     };
                 }
@@ -61,6 +62,7 @@ namespace lohost.API.Controllers
                 {
                     return new DocumentResponse()
                     {
+                        DocumentPath = document,
                         DocumentData = await _localApplicationHub.SendDocument(applicationId, document)
                     };
                 }
