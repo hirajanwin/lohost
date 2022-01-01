@@ -18,6 +18,8 @@
                     return new HTMLResponse(DocumentData);
                 case ".css":
                     return new CSSResponse(DocumentData);
+                case ".js":
+                    return new JavaScriptResponse(DocumentData);
                 default:
                     return new HTMLResponse(DocumentData);
             }
