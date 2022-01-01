@@ -67,22 +67,31 @@ namespace lohost.Client.Services
         {
             _reconnect = true;
 
+            bool connected = false;
+
             try
             {
                 _logger.Info("Starting connection");
 
                 await _apiHubConnection.StartAsync();
 
+                connected = true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Info($"Error connecting to hub: {ex.Message}");
+            }
+
+            if (connected)
+            {
                 _logger.Info("Connection Started, checking handshake");
 
                 string response = await _apiHubConnection.InvokeAsync<string>("Handshake", "1234");
 
                 _logger.Info("Handshake response: " + response);
             }
-            catch (Exception ex)
+            else
             {
-                _logger.Info($"Error connecting to hub: {ex.Message}");
-
                 await Task.Delay(1000);
 
                 await Start();

@@ -45,6 +45,9 @@ namespace lohost.Client
 
             if (_applicationAPI != null)
             {
+                _logger.Info("Stopping connection");
+
+
                 await _applicationAPI.Stop();
                 _applicationAPI = null;
             }
