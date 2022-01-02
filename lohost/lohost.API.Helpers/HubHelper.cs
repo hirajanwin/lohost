@@ -15,7 +15,7 @@ namespace lohost.API.Helpers
 
                 for (int i = 0; i < orderedConnections.Count; i++)
                 {
-                    if (document.ToLower().TrimStart('/').StartsWith(orderedConnections[i].Path.TrimStart('/'))) return orderedConnections[i].ConnectionId;
+                    if (document.ToLower().TrimStart('/').StartsWith(orderedConnections[i].Path)) return orderedConnections[i].ConnectionId;
                 }
 
                 if (allApplicationConnection != null) return allApplicationConnection.ConnectionId;
@@ -23,7 +23,7 @@ namespace lohost.API.Helpers
             }
             else if (applicationConnection.Count == 1)
             {
-                if (applicationConnections[0].Path.Equals("*") || document.ToLower().TrimStart('/').StartsWith(applicationConnections[0].Path.TrimStart('/'))) return applicationConnections[0].ConnectionId;
+                if (applicationConnections[0].Path.Equals("*") || document.ToLower().TrimStart('/').StartsWith(applicationConnections[0].Path)) return applicationConnections[0].ConnectionId;
                 else return null;
             }
             else

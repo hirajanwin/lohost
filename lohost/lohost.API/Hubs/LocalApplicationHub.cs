@@ -44,7 +44,9 @@ namespace lohost.API.Hubs
                     string appId;
 
                     if (appPaths[i] == "*") appId = applicationId;
-                    else appId = $"{applicationId}:{appPaths[i].ToLower()}";
+                    else appId = $"{applicationId}:{appPaths[i].ToLower().TrimStart('/')}";
+
+                    string appPath = appPaths[i].ToLower().TrimStart('/');
 
                     if (!_ConnectedApplications.ContainsKey(appId))
                     {
@@ -62,7 +64,7 @@ namespace lohost.API.Hubs
                                     {
                                         ConnectionId = Context.ConnectionId,
                                         Key = applicationKey,
-                                        Path = appPaths[i].ToLower()
+                                        Path = appPath
                                     };
                                 }
 
@@ -81,7 +83,7 @@ namespace lohost.API.Hubs
                             {
                                 ConnectionId = Context.ConnectionId,
                                 Key = applicationKey,
-                                Path = appPaths[i].ToLower()
+                                Path = appPath
                             };
                         }
                     }
@@ -92,7 +94,7 @@ namespace lohost.API.Hubs
                             _ConnectedApplications[appId] = new ApplicationConnection()
                             {
                                 ConnectionId = Context.ConnectionId,
-                                Path = appPaths[i].ToLower()
+                                Path = appPath
                             };
                         }
                         else
@@ -101,7 +103,7 @@ namespace lohost.API.Hubs
                             {
                                 ConnectionId = Context.ConnectionId,
                                 Key = applicationKey,
-                                Path = appPaths[i].ToLower()
+                                Path = appPath
                             };
                         }
 
