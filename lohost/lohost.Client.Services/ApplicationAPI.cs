@@ -42,15 +42,11 @@ namespace lohost.Client.Services
                 _apiHubConnection = null;
             }
 
-            if (!string.IsNullOrEmpty(_applicationData.ApplicationKey))
-            {
-                _apiHubConnection = new HubConnectionBuilder().WithUrl(_applicationData.ExternalAPI + $"/ApplicationHub?appId={_applicationData.ApplicationId}&appKey={_applicationData.ApplicationKey}").Build();
-            }
-            else
-            {
-                _apiHubConnection = new HubConnectionBuilder().WithUrl(_applicationData.ExternalAPI + $"/ApplicationHub?appId={_applicationData.ApplicationId}").Build();
-            }
+            string apiKeyQueryParam = !string.IsNullOrEmpty(_applicationData.ApplicationKey) ? $"&appKey={_applicationData.ApplicationKey}" : string.Empty;
+            string appPathsQueryParam = ((_applicationData.ApplicationPaths != null) && (_applicationData.ApplicationPaths.Length > 0)) ? $"&paths={string.Join("|", _applicationData.ApplicationPaths)}" : string.Empty;
 
+            _apiHubConnection = new HubConnectionBuilder().WithUrl(_applicationData.ExternalAPI + $"/ApplicationHub?appId={_applicationData.ApplicationId}{apiKeyQueryParam}{appPathsQueryParam}").Build();
+   
             _apiHubConnection.Closed += async (error) =>
             {
                 if (_handshakeComplete)

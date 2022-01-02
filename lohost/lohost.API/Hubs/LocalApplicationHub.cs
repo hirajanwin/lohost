@@ -34,107 +34,79 @@ namespace lohost.API.Hubs
             {
                 applicationId = applicationId.ToLower();
 
-                if (!_ConnectedApplications.ContainsKey(applicationId))
+                string[] appPaths;
+
+                if (!string.IsNullOrEmpty(applicationPaths)) appPaths = applicationPaths.Split(new char[] { '|' });
+                else appPaths = new string[] { "*" };
+
+                for (int i = 0; i < appPaths.Length; i++)
                 {
-                    string[] appPaths;
+                    string appId;
 
-                    if (!string.IsNullOrEmpty(applicationPaths)) appPaths = applicationPaths.Split(new char[] { '|' });
-                    else appPaths = new string[0];
+                    if (appPaths[i] == "*") appId = applicationId;
+                    else appId = $"{applicationId}:{appPaths[i]}";
 
-                    MemoryCache connectedApplicationLockCache = MemoryCache.Default;
-
-                    if (connectedApplicationLockCache.Contains(applicationId))
+                    if (!_ConnectedApplications.ContainsKey(appId))
                     {
-                        ApplicationConnection applicationConnetion = (ApplicationConnection)connectedApplicationLockCache.Get(applicationId);
+                        MemoryCache connectedApplicationLockCache = MemoryCache.Default;
 
-                        if (!string.IsNullOrEmpty(applicationKey) && (applicationConnetion.Key == applicationKey))
+                        if (connectedApplicationLockCache.Contains(appId))
                         {
-                            if (appPaths.Length > 0)
+                            ApplicationConnection applicationConnetion = (ApplicationConnection)connectedApplicationLockCache.Get(applicationId);
+
+                            if (!string.IsNullOrEmpty(applicationKey) && (applicationConnetion.Key == applicationKey))
                             {
-                                for (int i = 0; i< appPaths.Length; i++)
+                                if (appPaths.Length > 0)
                                 {
-                                    _ConnectedApplications[$"{applicationId}:{appPaths[i]}"] = new ApplicationConnection()
+                                    _ConnectedApplications[appId] = new ApplicationConnection()
                                     {
                                         ConnectionId = Context.ConnectionId,
                                         Key = applicationKey,
                                         Path = appPaths[i]
                                     };
                                 }
+
+                                connectedApplicationLockCache.Remove(applicationId);
+
+                                await base.OnConnectedAsync();
                             }
                             else
                             {
-                                _ConnectedApplications[applicationId] = new ApplicationConnection()
-                                {
-                                    ConnectionId = Context.ConnectionId,
-                                    Key = applicationKey,
-                                    Path = "*"
-                                };
+                                Context.Abort();
                             }
-
-                            connectedApplicationLockCache.Remove(applicationId);
-
-                            await base.OnConnectedAsync();
                         }
                         else
                         {
-                            Context.Abort();
+                            _ConnectedApplications[appId] = new ApplicationConnection()
+                            {
+                                ConnectionId = Context.ConnectionId,
+                                Key = applicationKey,
+                                Path = appPaths[i]
+                            };
                         }
                     }
                     else
                     {
                         if (string.IsNullOrEmpty(applicationKey))
                         {
-                            if (appPaths.Length > 0)
+                            _ConnectedApplications[appId] = new ApplicationConnection()
                             {
-                                for (int i = 0; i < appPaths.Length; i++)
-                                {
-                                    _ConnectedApplications[$"{applicationId}:{appPaths[i]}"] = new ApplicationConnection()
-                                    {
-                                        ConnectionId = Context.ConnectionId,
-                                        Path = appPaths[i]
-                                    };
-                                }
-                            }
-                            else
-                            {
-                                _ConnectedApplications[applicationId] = new ApplicationConnection()
-                                {
-                                    ConnectionId = Context.ConnectionId,
-                                    Path = "*"
-                                };
-                            }
+                                ConnectionId = Context.ConnectionId,
+                                Path = appPaths[i]
+                            };
                         }
                         else
                         {
-                            if (appPaths.Length > 0)
+                            _ConnectedApplications[appId] = new ApplicationConnection()
                             {
-                                for (int i = 0; i < appPaths.Length; i++)
-                                {
-                                    _ConnectedApplications[$"{applicationId}:{appPaths[i]}"] = new ApplicationConnection()
-                                    {
-                                        ConnectionId = Context.ConnectionId,
-                                        Key = applicationKey,
-                                        Path = appPaths[i]
-                                    };
-                                }
-                            }
-                            else
-                            {
-                                _ConnectedApplications[applicationId] = new ApplicationConnection()
-                                {
-                                    ConnectionId = Context.ConnectionId,
-                                    Key = applicationKey,
-                                    Path = "*"
-                                };
-                            }
+                                ConnectionId = Context.ConnectionId,
+                                Key = applicationKey,
+                                Path = appPaths[i]
+                            };
                         }
 
                         await base.OnConnectedAsync();
                     }
-                }
-                else
-                {
-                    Context.Abort();
                 }
             }
             else

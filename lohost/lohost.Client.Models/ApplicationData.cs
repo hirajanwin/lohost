@@ -25,6 +25,8 @@
 
         public string ExternalAPI { get; set; }
 
+        public string[] ApplicationPaths { get; set; }
+
         public string GetRegisteredAddress()
         {
             if (ExternalAPI.StartsWith("https://")) return $"https://{ApplicationId}.{ExternalAPI.Substring("https://".Length)}";
