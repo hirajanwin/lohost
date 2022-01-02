@@ -28,6 +28,8 @@ namespace lohost.API.Hubs
 
             if (!string.IsNullOrEmpty(applicationId))
             {
+                applicationId = applicationId.ToLower();
+
                 if (!_ConnectedApplications.ContainsKey(applicationId))
                 {
                     MemoryCache connectedApplicationLockCache = MemoryCache.Default;
@@ -111,6 +113,8 @@ namespace lohost.API.Hubs
         }
         public async Task<ExternalDocument> GetDocument(string applicationId, string document)
         {
+            applicationId = applicationId.ToLower();
+
             if (_ConnectedApplications.ContainsKey(applicationId))
             {
                 ExternalDocumentRequest externalDocumentRequest = new ExternalDocumentRequest();
@@ -145,33 +149,28 @@ namespace lohost.API.Hubs
 
         public async Task<int> GetChunkSize(string applicationId)
         {
+            applicationId = applicationId.ToLower();
+
             if (_ConnectedApplications.ContainsKey(applicationId))
             {
-                if (_ConnectedApplications.ContainsKey(applicationId))
+                IntRequest intRequest = new IntRequest();
+
+                await Clients.Client(_ConnectedApplications[applicationId].ConnectionId).SendAsync("GetChunkSize", intRequest.TransactionId);
+
+                int? chunkSize = intRequest.Execute();
+
+                if (chunkSize.HasValue)
                 {
-                    IntRequest intRequest = new IntRequest();
-
-                    await Clients.Client(_ConnectedApplications[applicationId].ConnectionId).SendAsync("GetChunkSize", intRequest.TransactionId);
-
-                    int? chunkSize = intRequest.Execute();
-
-                    if (chunkSize.HasValue)
-                    {
-                        return chunkSize.Value;
-                    }
-                    else
-                    {
-                        throw new Exception("Error retrieving chunk size");
-                    }
+                    return chunkSize.Value;
                 }
                 else
                 {
-                    throw new Exception("Unable to fnd the local application");
+                    throw new Exception("Error retrieving chunk size");
                 }
             }
             else
             {
-                throw new Exception("Unable to connect to local application");
+                throw new Exception("Unable to fnd the local application");
             }
         }
 
@@ -186,6 +185,8 @@ namespace lohost.API.Hubs
 
         public async Task<byte[]> SendDocument(string applicationId, string document)
         {
+            applicationId = applicationId.ToLower();
+
             if (_ConnectedApplications.ContainsKey(applicationId))
             {
                 ByteArrayRequest byteArrayRequest = new ByteArrayRequest();
@@ -222,6 +223,8 @@ namespace lohost.API.Hubs
 
         public async Task<byte[]> SendDocumentChunk(string applicationId, string document, long startRange, long endRange)
         {
+            applicationId = applicationId.ToLower();
+
             if (_ConnectedApplications.ContainsKey(applicationId))
             {
                 ByteArrayRequest byteArrayRequest = new ByteArrayRequest();
