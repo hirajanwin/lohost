@@ -32,8 +32,14 @@ app.MapHub<LocalApplicationHub>("/ApplicationHub");
 
 app.MapGet("{*.}", async (HttpContext httpContext) =>
 {
-    var urlHost = httpContext.Request.Host.ToString();
-    var queryPath = httpContext.Request.Path.ToString();
+    string urlHost = httpContext.Request.Host.ToString();
+    string queryPath = httpContext.Request.Path.ToString();
+
+    if (string.IsNullOrEmpty(queryPath) || !queryPath.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).Last().Contains('.'))
+    {
+        if (string.IsNullOrEmpty(queryPath)) queryPath = "index.html";
+        else queryPath = $"{queryPath.TrimEnd('/')}/index.html";
+    }
 
     var applicationId = urlHost.Replace(hostingLocation, string.Empty, StringComparison.OrdinalIgnoreCase).Trim('.');
 
