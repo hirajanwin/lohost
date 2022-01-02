@@ -1,6 +1,6 @@
 ﻿using lohost.API.Hubs;
+using lohost.API.Logging;
 using lohost.API.Response;
-using lohost.Logging;
 using lohost.Models;
 
 namespace lohost.API.Controllers

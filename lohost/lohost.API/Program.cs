@@ -1,8 +1,7 @@
 using lohost.API.Controllers;
 using lohost.API.Hubs;
+using lohost.API.Logging;
 using lohost.API.Response;
-using lohost.Logging;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 

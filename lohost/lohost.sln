@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31729.503
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Client", "lohost.Client\lohost.Client.csproj", "{9F0EC847-31A5-4E32-BD81-8D3536F92228}"
 EndProject
@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Client.Models", "loh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Client.Logging", "lohost.Client.Logging\lohost.Client.Logging.csproj", "{1705950F-4ED0-4B36-90AB-86C4F71DD961}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Logging", "lohost.Logging\lohost.Logging.csproj", "{699D49A5-B7BD-4846-8ABA-108764F67FC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.API.Logging", "lohost.Logging\lohost.API.Logging.csproj", "{699D49A5-B7BD-4846-8ABA-108764F67FC1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.API", "lohost.API\lohost.API.csproj", "{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}"
 EndProject
@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.API.Response", "loho
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.API.Helpers", "lohost.API.Helpers\lohost.API.Helpers.csproj", "{972EE865-4507-48C5-B4D0-E1D747DA71B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lohost.API.Models", "lohost.API.Models\lohost.API.Models.csproj", "{BEA5CDBC-C8A0-4E10-9AAD-5E661A0931DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.API.Models", "lohost.API.Models\lohost.API.Models.csproj", "{BEA5CDBC-C8A0-4E10-9AAD-5E661A0931DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

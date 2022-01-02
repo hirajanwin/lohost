@@ -1,11 +1,11 @@
 ﻿using lohost.API.Request;
-using lohost.Logging;
 using lohost.Models;
 using System.Runtime.Caching;
 using Microsoft.AspNet.SignalR.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using lohost.API.Models;
 using lohost.API.Helpers;
+using lohost.API.Logging;
 
 namespace lohost.API.Hubs
 {

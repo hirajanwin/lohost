@@ -3,7 +3,7 @@ using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace lohost.Logging
+namespace lohost.API.Logging
 {
     public class SystemLogging
     {
