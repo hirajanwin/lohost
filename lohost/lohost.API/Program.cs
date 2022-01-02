@@ -44,7 +44,7 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
 
         DocumentResponse documentResponse = await localApplication.GetDocument(applicationId, queryPath);
 
-        if (documentResponse != null)
+        if ((documentResponse != null) && (documentResponse.DocumentFound()))
         {
             IResponse response = documentResponse.GetResponse();
 
@@ -60,16 +60,14 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
         }
         else
         {
-            Console.WriteLine("missing");
-
-            return null;
+            return Results.NotFound();
         }
     }
     else
     {
         Console.WriteLine("local");
 
-        return null;
+        return Results.NotFound();
     }
 });
 

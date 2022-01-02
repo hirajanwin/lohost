@@ -29,7 +29,7 @@ namespace lohost.API.Logging
         {
             log = BuildLog(log, ex);
 
-            Trace.TraceInformation("Debug: " + log);
+            Console.WriteLine("Debug: " + log);
 
             if (_telemetryClient != null)
             {
@@ -51,7 +51,7 @@ namespace lohost.API.Logging
         {
             log = BuildLog(log, ex);
 
-            Trace.TraceInformation("Info: " + log);
+            Console.WriteLine("Info: " + log);
 
             if (_telemetryClient != null)
             {
@@ -94,8 +94,8 @@ namespace lohost.API.Logging
         public void Error(string log, Exception ex = null)
         {
             log = BuildLog(log, ex);
-
-            Trace.TraceError("Error: " + log);
+            
+            Console.WriteLine("Error: " + log);
 
             if (_telemetryClient != null)
             {
@@ -117,7 +117,7 @@ namespace lohost.API.Logging
         {
             log = BuildLog(log, ex);
 
-            Trace.TraceError("Fatal: " + log);
+            Console.WriteLine("Fatal: " + log);
 
             if (_telemetryClient != null)
             {

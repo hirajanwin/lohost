@@ -24,97 +24,7 @@ namespace lohost.API.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            var httpContext = Context.GetHttpContext();
-
-            string applicationId = httpContext.Request.Query["appId"];
-            string applicationKey = httpContext.Request.Query["appKey"];
-            string applicationPaths = httpContext.Request.Query["paths"];
-
-            if (!string.IsNullOrEmpty(applicationId))
-            {
-                applicationId = applicationId.ToLower();
-
-                string[] appPaths;
-
-                if (!string.IsNullOrEmpty(applicationPaths)) appPaths = applicationPaths.Split(new char[] { '|' });
-                else appPaths = new string[] { "*" };
-
-                for (int i = 0; i < appPaths.Length; i++)
-                {
-                    string appId;
-
-                    if (appPaths[i] == "*") appId = applicationId;
-                    else appId = $"{applicationId}:{appPaths[i].ToLower().TrimStart('/')}";
-
-                    string appPath = appPaths[i].ToLower().TrimStart('/');
-
-                    if (!_ConnectedApplications.ContainsKey(appId))
-                    {
-                        MemoryCache connectedApplicationLockCache = MemoryCache.Default;
-
-                        if (connectedApplicationLockCache.Contains(appId))
-                        {
-                            ApplicationConnection applicationConnetion = (ApplicationConnection)connectedApplicationLockCache.Get(applicationId);
-
-                            if (!string.IsNullOrEmpty(applicationKey) && (applicationConnetion.Key == applicationKey))
-                            {
-                                if (appPaths.Length > 0)
-                                {
-                                    _ConnectedApplications[appId] = new ApplicationConnection()
-                                    {
-                                        ConnectionId = Context.ConnectionId,
-                                        Key = applicationKey,
-                                        Path = appPath
-                                    };
-                                }
-
-                                connectedApplicationLockCache.Remove(applicationId);
-
-                                await base.OnConnectedAsync();
-                            }
-                            else
-                            {
-                                Context.Abort();
-                            }
-                        }
-                        else
-                        {
-                            _ConnectedApplications[appId] = new ApplicationConnection()
-                            {
-                                ConnectionId = Context.ConnectionId,
-                                Key = applicationKey,
-                                Path = appPath
-                            };
-                        }
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(applicationKey))
-                        {
-                            _ConnectedApplications[appId] = new ApplicationConnection()
-                            {
-                                ConnectionId = Context.ConnectionId,
-                                Path = appPath
-                            };
-                        }
-                        else
-                        {
-                            _ConnectedApplications[appId] = new ApplicationConnection()
-                            {
-                                ConnectionId = Context.ConnectionId,
-                                Key = applicationKey,
-                                Path = appPath
-                            };
-                        }
-
-                        await base.OnConnectedAsync();
-                    }
-                }
-            }
-            else
-            {
-                Context.Abort();
-            }
+            await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception ex)
@@ -141,6 +51,95 @@ namespace lohost.API.Hubs
 
             await base.OnDisconnectedAsync(ex);
         }
+
+        public async Task Register(string connectionId, string applicationId, string applicationKey, string applicationPaths)
+        {
+            _systemLogging.Debug($"connectionId: {connectionId}");
+            _systemLogging.Debug($"applicationId: {applicationId}");
+            _systemLogging.Debug($"applicationKey: {applicationKey}");
+            _systemLogging.Debug($"applicationPaths: {applicationPaths}");
+
+            if (!string.IsNullOrEmpty(applicationId))
+            {
+                bool addedConnection = false;
+
+                applicationId = applicationId.ToLower();
+
+                string[] appPaths;
+
+                if (!string.IsNullOrEmpty(applicationPaths)) appPaths = applicationPaths.Split(new char[] { '|' });
+                else appPaths = new string[] { "*" };
+
+                for (int i = 0; i < appPaths.Length; i++)
+                {
+                    string appId;
+
+                    if (appPaths[i] == "*") appId = applicationId;
+                    else appId = $"{applicationId}:{appPaths[i].ToLower().TrimStart('/')}";
+
+                    string appPath = appPaths[i].ToLower().TrimStart('/');
+
+                    if (!_ConnectedApplications.ContainsKey(appId))
+                    {
+                        MemoryCache connectedApplicationLockCache = MemoryCache.Default;
+
+                        if (connectedApplicationLockCache.Contains(appId))
+                        {
+                            ApplicationConnection applicationConnetion = (ApplicationConnection)connectedApplicationLockCache.Get(applicationId);
+
+                            if ((applicationConnetion != null) &&
+                                (!string.IsNullOrEmpty(applicationKey) && (applicationConnetion.Key == applicationKey)))
+                            {
+                                if (appPaths.Length > 0)
+                                {
+                                    _ConnectedApplications[appId] = new ApplicationConnection()
+                                    {
+                                        ConnectionId = connectionId,
+                                        Key = applicationKey,
+                                        Path = appPath
+                                    };
+                                }
+
+                                connectedApplicationLockCache.Remove(applicationId);
+
+                                addedConnection = true;
+                            }
+                        }
+                        else
+                        {
+                            if (string.IsNullOrEmpty(applicationKey))
+                            {
+                                _ConnectedApplications[appId] = new ApplicationConnection()
+                                {
+                                    ConnectionId = connectionId,
+                                    Path = appPath
+                                };
+                            }
+                            else
+                            {
+                                _ConnectedApplications[appId] = new ApplicationConnection()
+                                {
+                                    ConnectionId = connectionId,
+                                    Key = applicationKey,
+                                    Path = appPath
+                                };
+                            }
+
+                            addedConnection = true;
+                        }
+                    }
+                }
+
+                _systemLogging.Debug($"addedConnection: {addedConnection}");
+
+                if (!addedConnection) Context.Abort();
+            }
+            else
+            {
+                Context.Abort();
+            }
+        }
+
         public async Task<ExternalDocument> GetDocument(string applicationId, string document)
         {
             applicationId = applicationId.ToLower();
@@ -153,16 +152,7 @@ namespace lohost.API.Hubs
 
                 await Clients.Client(connectionId).SendAsync("GetDocument", externalDocumentRequest.TransactionId, document);
 
-                ExternalDocument file = externalDocumentRequest.Execute();
-
-                if (file != null)
-                {
-                    return file;
-                }
-                else
-                {
-                    throw new Exception("Error retrieving file");
-                }
+                return externalDocumentRequest.Execute();
             }
             else
             {

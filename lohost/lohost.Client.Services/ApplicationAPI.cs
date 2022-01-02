@@ -42,10 +42,7 @@ namespace lohost.Client.Services
                 _apiHubConnection = null;
             }
 
-            string apiKeyQueryParam = !string.IsNullOrEmpty(_applicationData.ApplicationKey) ? $"&appKey={_applicationData.ApplicationKey}" : string.Empty;
-            string appPathsQueryParam = ((_applicationData.ApplicationPaths != null) && (_applicationData.ApplicationPaths.Length > 0)) ? $"&paths={string.Join("|", _applicationData.ApplicationPaths)}" : string.Empty;
-
-            _apiHubConnection = new HubConnectionBuilder().WithUrl(_applicationData.ExternalAPI + $"/ApplicationHub?appId={_applicationData.ApplicationId}{apiKeyQueryParam}{appPathsQueryParam}").Build();
+            _apiHubConnection = new HubConnectionBuilder().WithUrl(_applicationData.ExternalAPI + $"/ApplicationHub").Build();
    
             _apiHubConnection.Closed += async (error) =>
             {
@@ -99,6 +96,13 @@ namespace lohost.Client.Services
             {
                 try
                 {
+                    _logger.Info($"Connection ID: {_apiHubConnection.ConnectionId}");
+
+                    string apiKeyParam = !string.IsNullOrEmpty(_applicationData.ApplicationKey) ? _applicationData.ApplicationKey : string.Empty;
+                    string appPathsParam = ((_applicationData.ApplicationPaths != null) && (_applicationData.ApplicationPaths.Length > 0)) ? string.Join("|", _applicationData.ApplicationPaths) : string.Empty;
+
+                    await _apiHubConnection.InvokeAsync("Register", _apiHubConnection.ConnectionId, _applicationData.ApplicationId, apiKeyParam, appPathsParam);
+
                     string response = await _apiHubConnection.InvokeAsync<string>("Handshake", "1234");
 
                     _handshakeComplete = true;
@@ -106,6 +110,8 @@ namespace lohost.Client.Services
                     _logger.Info("Connection made, handshake complete");
 
                     _logger.Info($"Your website should now be available at: {_applicationData.GetRegisteredAddress()}");
+
+                    _logger.Info($"This website serves: {(((_applicationData.ApplicationPaths != null) && (_applicationData.ApplicationPaths.Length > 0)) ? $"{string.Join(",", _applicationData.ApplicationPaths)}" : "*")}");
                 }
                 catch (Exception)
                 {

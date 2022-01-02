@@ -67,8 +67,14 @@ namespace lohost.API.Controllers
                     };
                 }
             }
-
-            return null;
+            else
+            {
+                return new DocumentResponse()
+                {
+                    DocumentPath = document,
+                    DocumentData = null
+                };
+            }
         }
     }
 }

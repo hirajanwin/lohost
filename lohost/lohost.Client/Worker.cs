@@ -27,6 +27,8 @@ namespace lohost.Client
 
             if (_logger == null) _logger = new Log(_applicationData.GetLogsFolder());
 
+            _logger.Info("lohost client: v0.1");
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (_applicationAPI == null)

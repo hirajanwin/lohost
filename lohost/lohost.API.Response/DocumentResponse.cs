@@ -6,6 +6,11 @@
 
         public byte[] DocumentData { get; set; }
 
+        public bool DocumentFound()
+        {
+            return DocumentData != null;
+        }
+
         public IResponse GetResponse()
         {
             string[] pathParts = DocumentPath.Split('/');
