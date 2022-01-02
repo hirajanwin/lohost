@@ -44,7 +44,7 @@ namespace lohost.API.Hubs
                     string appId;
 
                     if (appPaths[i] == "*") appId = applicationId;
-                    else appId = $"{applicationId}:{appPaths[i]}";
+                    else appId = $"{applicationId}:{appPaths[i].ToLower()}";
 
                     if (!_ConnectedApplications.ContainsKey(appId))
                     {
@@ -62,7 +62,7 @@ namespace lohost.API.Hubs
                                     {
                                         ConnectionId = Context.ConnectionId,
                                         Key = applicationKey,
-                                        Path = appPaths[i]
+                                        Path = appPaths[i].ToLower()
                                     };
                                 }
 
@@ -81,7 +81,7 @@ namespace lohost.API.Hubs
                             {
                                 ConnectionId = Context.ConnectionId,
                                 Key = applicationKey,
-                                Path = appPaths[i]
+                                Path = appPaths[i].ToLower()
                             };
                         }
                     }
@@ -92,7 +92,7 @@ namespace lohost.API.Hubs
                             _ConnectedApplications[appId] = new ApplicationConnection()
                             {
                                 ConnectionId = Context.ConnectionId,
-                                Path = appPaths[i]
+                                Path = appPaths[i].ToLower()
                             };
                         }
                         else
@@ -101,7 +101,7 @@ namespace lohost.API.Hubs
                             {
                                 ConnectionId = Context.ConnectionId,
                                 Key = applicationKey,
-                                Path = appPaths[i]
+                                Path = appPaths[i].ToLower()
                             };
                         }
 

@@ -10,12 +10,12 @@ namespace lohost.API.Helpers
 
             if (applicationConnections.Count > 1)
             {
-                ApplicationConnection allApplicationConnection = applicationConnections.FirstOrDefault(ac => ac.Path == "*");
+                ApplicationConnection? allApplicationConnection = applicationConnections.FirstOrDefault(ac => ac.Path == "*");
                 List<ApplicationConnection> orderedConnections = applicationConnections.Where(ac => ac.Path != "*").OrderByDescending(ac => ac.Path.Length).ToList();
 
                 for (int i = 0; i < orderedConnections.Count; i++)
                 {
-                    if (document.TrimStart('/').StartsWith(orderedConnections[i].Path.TrimStart('/'))) return orderedConnections[i].ConnectionId;
+                    if (document.ToLower().TrimStart('/').StartsWith(orderedConnections[i].Path.TrimStart('/'))) return orderedConnections[i].ConnectionId;
                 }
 
                 if (allApplicationConnection != null) return allApplicationConnection.ConnectionId;
@@ -23,7 +23,7 @@ namespace lohost.API.Helpers
             }
             else if (applicationConnection.Count == 1)
             {
-                if (applicationConnections[0].Path.Equals("*") || document.TrimStart('/').StartsWith(applicationConnections[0].Path.TrimStart('/'))) return applicationConnections[0].ConnectionId;
+                if (applicationConnections[0].Path.Equals("*") || document.ToLower().TrimStart('/').StartsWith(applicationConnections[0].Path.TrimStart('/'))) return applicationConnections[0].ConnectionId;
                 else return null;
             }
             else
@@ -37,7 +37,7 @@ namespace lohost.API.Helpers
 
             if (applicationConnections.Count > 0)
             {
-                ApplicationConnection allApplicationConnection = applicationConnections.FirstOrDefault(ac => ac.Path == "*");
+                ApplicationConnection? allApplicationConnection = applicationConnections.FirstOrDefault(ac => ac.Path == "*");
 
                 if (allApplicationConnection != null)
                 {
