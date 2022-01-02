@@ -37,36 +37,36 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
 
     var applicationId = urlHost.Replace(hostingLocation, string.Empty, StringComparison.OrdinalIgnoreCase).Trim('.');
 
+    DocumentResponse documentResponse;
+
     // This is a request for a remote application.
     if (!string.IsNullOrEmpty(applicationId))
     {
         LocalApplication localApplication = new LocalApplication(systemLogging, localIntegrationHub);
 
-        DocumentResponse documentResponse = await localApplication.GetDocument(applicationId, queryPath);
+        documentResponse = await localApplication.GetDocument(applicationId, queryPath);
+    }
+    else
+    {
+        documentResponse = null;
+    }
 
-        if ((documentResponse != null) && (documentResponse.DocumentFound()))
-        {
-            IResponse response = documentResponse.GetResponse();
+    if ((documentResponse != null) && (documentResponse.DocumentFound()))
+    {
+        IResponse response = documentResponse.GetResponse();
 
-            switch (response.GetResultType())
-            {
-                case "text":
-                    return Results.Text((string)response.GetContent(), response.GetContentType());
-                case "file":
-                    return Results.File((byte[])response.GetContent(), response.GetContentType());
-                default:
-                    return null;
-            }
-        }
-        else
+        switch (response.GetResultType())
         {
-            return Results.NotFound();
+            case "text":
+                return Results.Text((string)response.GetContent(), response.GetContentType());
+            case "file":
+                return Results.File((byte[])response.GetContent(), response.GetContentType());
+            default:
+                return Results.NoContent();
         }
     }
     else
     {
-        Console.WriteLine("local");
-
         return Results.NotFound();
     }
 });
