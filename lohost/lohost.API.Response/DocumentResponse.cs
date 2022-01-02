@@ -27,6 +27,8 @@
                     return new JavaScriptResponse(DocumentData);
                 case ".jpg":
                     return new JPGResponse(DocumentData);
+                case ".json":
+                    return new JSONResponse(DocumentData);
                 default:
                     return new HTMLResponse(DocumentData);
             }
