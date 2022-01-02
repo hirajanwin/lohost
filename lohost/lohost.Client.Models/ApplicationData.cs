@@ -15,6 +15,8 @@
 
         public string ApplicationId { get; set; }
 
+        public string ApplicationKey { get; set; }
+
         public string ExecutingLocation { get; }
 
         public string ApplicationFolder { get; set; }

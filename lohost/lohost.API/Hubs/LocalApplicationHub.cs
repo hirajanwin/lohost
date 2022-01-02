@@ -12,11 +12,6 @@ namespace lohost.API.Hubs
     {
         private static Dictionary<string, ApplicationConnection> _ConnectedApplications = new Dictionary<string, ApplicationConnection>();
 
-        private static readonly CacheItemPolicy _CachedJobScriptPolicy = new CacheItemPolicy
-        {
-            SlidingExpiration = TimeSpan.FromMinutes(10)
-        };
-
         private SystemLogging _systemLogging;
 
         public LocalApplicationHub(SystemLogging systemLogging)
@@ -28,8 +23,8 @@ namespace lohost.API.Hubs
         {
             var httpContext = Context.GetHttpContext();
 
-            string applicationId = httpContext.Request.Query["applicationId"];
-            string applicationKey = httpContext.Request.Query["applicationKey"];
+            string applicationId = httpContext.Request.Query["appId"];
+            string applicationKey = httpContext.Request.Query["appKey"];
 
             if (!string.IsNullOrEmpty(applicationId))
             {
@@ -102,7 +97,10 @@ namespace lohost.API.Hubs
 
                         if (connectedApplicationLockCache.Contains(applicationConnection.Key)) connectedApplicationLockCache.Remove(applicationConnection.Key);
 
-                        connectedApplicationLockCache.Add(applicationConnection.Key, applicationConnection.Value, _CachedJobScriptPolicy);
+                        connectedApplicationLockCache.Add(applicationConnection.Key, applicationConnection.Value, new CacheItemPolicy
+                        {
+                            AbsoluteExpiration = DateTime.UtcNow.AddMinutes(10)
+                        });
                     }
 
                     _ConnectedApplications.Remove(applicationConnection.Key);
