@@ -27,6 +27,8 @@
                     return new JavaScriptResponse(DocumentData);
                 case ".jpg":
                     return new JPGResponse(DocumentData);
+                case ".png":
+                    return new PNGResponse(DocumentData);
                 case ".json":
                     return new JSONResponse(DocumentData);
                 default:

@@ -35,10 +35,12 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
     string urlHost = httpContext.Request.Host.ToString();
     string queryPath = httpContext.Request.Path.ToString();
 
-    if (string.IsNullOrEmpty(queryPath) || !queryPath.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).Last().Contains('.'))
+    string[] queryPathParts = queryPath.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+    if ((queryPathParts.Length == 0) || !queryPathParts.Last().Contains('.'))
     {
-        if (string.IsNullOrEmpty(queryPath)) queryPath = "index.html";
-        else queryPath = $"{queryPath.TrimEnd('/')}/index.html";
+        if (queryPathParts.Length == 0) queryPath = "/index.html";
+        else queryPath = $"/{string.Join('/', queryPathParts)}/index.html";
     }
 
     var applicationId = urlHost.Replace(hostingLocation, string.Empty, StringComparison.OrdinalIgnoreCase).Trim('.');
@@ -54,7 +56,22 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
     }
     else
     {
-        documentResponse = null;
+        string websitePath = Path.Join(Directory.GetCurrentDirectory(), "website", queryPath.Trim('/').Replace('/', '\\'));
+
+        systemLogging.Debug($"Local website path: {websitePath}");
+
+        if (File.Exists(websitePath))
+        {
+            documentResponse = new DocumentResponse()
+            {
+                DocumentPath = queryPath,
+                DocumentData = File.ReadAllBytes(websitePath)
+            };
+        }
+        else
+        {
+            documentResponse = null;
+        }
     }
 
     if ((documentResponse != null) && (documentResponse.DocumentFound()))
