@@ -25,14 +25,14 @@
         <div class="content">
             <div class="group">
                 <h3>config.json</h3>
-                <p>The config.json file should immediately be appear in the root of the lohost folder when lohost.exe is ran, if one doesn't already exist. It is populated with defaults that can be changed to configure your website.</p>
+                <p>The config.json file should immediately appear in the root of the lohost folder when lohost.exe is run, if one doesn't already exist. It is populated with defaults that can be changed to configure your website.</p>
                 <p>This is a JSON file and so standard JSON formatting applies.</p>
                 <p>Remember, the lohost.exe will need to be stopped and started again for any config changes to be reflected.</p>
             </div>
             <div class="group">
                 <h3>Options</h3>
                 <p><b>ApplicationId (Required)</b></p>
-                <p>This is the subdomain that the website will sit on lohost, https://{ApplicationId}.lohost.io. If the ApplicationId is already in use, the application will go into polling mode and check every 5 seconds if it now available.</p>
+                <p>This is the subdomain that the website will sit on lohost, https://{ApplicationId}.lohost.io. If the ApplicationId is already in use, the application will go into polling mode and check every 5 seconds until it is available.</p>
                 <p>Certain characters are not allowed as part of the ApplicationId: . ? / \ & #</p>
                 <br />
                 <p><b>ApplicationKey (Optional)</b></p>
@@ -43,7 +43,7 @@
                 <p><b>ApplicationPaths (Optional)</b></p>
                 <p>This is an optional config option but at least one of your ApplicationId instances must be running with an empty ApplicationPaths variable (making it the default route).</p>
                 <p>This parameter is a string array and should correspond to a relative path within your "App" folder. Once defined, this will become where the website will serve the document from.</p>
-                <p>An example, if you have a folder stucture "App/route/mine", you can put an entry into the ApplicationPaths parameter "ApplicationPaths": [ "App/route/mine" ]. If someone then goes to the URL https://{ApplicationId}.lohost.io/App/route/mine/test.html, it will be served from that lohost instance.   </p>
+                <p>An example, if you have a folder structure "App/route/mine", you can put an entry into the ApplicationPaths parameter "ApplicationPaths": [ "App/route/mine" ]. If someone then goes to the URL https://{ApplicationId}.lohost.io/App/route/mine/test.html, it will be served from that lohost instance.   </p>
                 <br />
                 <p><b>IsListed (Required)</b></p>
                 <p>This config option determines if your website is listed on the lohost.io website, by default it is false.</p>
@@ -56,11 +56,11 @@
                 <p>An example of this would be, "Tags": [ "firstwebsite", "mine", "heyhey" ]</p>
                 <br />
                 <p><b>ApplicationFolder (Required)</b></p>
-                <p>This is the folder that your website will be hosted from. By default, this is "App" and it reall shouldn't be changed without reason.</p>
+                <p>This is the folder that your website will be hosted from. By default, this is "App" and it really shouldn't be changed without reason.</p>
                 <p>If you have a burning desire to change it, it will work either via an absolute path, "MyWebsite", or a relative path "C:\MyWebsite"</p>
                 <br />
                 <p><b>LogsFolder (Required)</b></p>
-                <p>This is the folder where your website logs will be stored. By default, this is "Logs" and it reall shouldn't be changed without reason.</p>
+                <p>This is the folder where your website logs will be stored. By default, this is "Logs" and it really shouldn't be changed without reason.</p>
                 <p>If you are a control freak and must change it, it will work either via an absolute path, "MyLogs", or a relative path "C:\MyLogs"</p>
                 <br />
                 <p><b>ExternalAPI (Required)</b></p>
