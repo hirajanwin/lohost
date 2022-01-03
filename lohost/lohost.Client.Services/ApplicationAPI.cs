@@ -153,33 +153,42 @@ namespace lohost.Client.Services
         {
             _logger.Info($"Request received to get {document}");
 
-            string applicationFolder = _applicationData.GetApplicationFolder();
-
-            if (!string.IsNullOrEmpty(applicationFolder))
+            try
             {
-                string filePath = Path.Join(applicationFolder, document.Replace('/', Path.DirectorySeparatorChar));
-                if (File.Exists(filePath))
+                string applicationFolder = _applicationData.GetApplicationFolder();
+
+                if (!string.IsNullOrEmpty(applicationFolder))
                 {
-                    _logger.Debug($"Getting file information for {filePath}");
-
-                    FileInfo fi = new FileInfo(filePath);
-
-                    await _apiHubConnection.InvokeAsync("DocumentRetrieved", transactionId, new ExternalDocument()
+                    string filePath = Path.Join(applicationFolder, document.Replace('/', Path.DirectorySeparatorChar));
+                    if (File.Exists(filePath))
                     {
-                        Path = document,
-                        Size = fi.Length
-                    });
+                        _logger.Debug($"Getting file information for {filePath}");
+
+                        FileInfo fi = new FileInfo(filePath);
+
+                        await _apiHubConnection.InvokeAsync("DocumentRetrieved", transactionId, new ExternalDocument()
+                        {
+                            Path = document,
+                            Size = fi.Length
+                        });
+                    }
+                    else
+                    {
+                        _logger.Error($"Unable to find file {filePath}");
+
+                        await _apiHubConnection.InvokeAsync("DocumentRetrieved", transactionId, null);
+                    }
                 }
                 else
                 {
-                    _logger.Error($"Unable to find file {filePath}");
+                    _logger.Error($"Unable to find application folder");
 
                     await _apiHubConnection.InvokeAsync("DocumentRetrieved", transactionId, null);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                _logger.Error($"Unable to find application folder");
+                _logger.Error($"Error retrieving document: {document}", ex);
 
                 await _apiHubConnection.InvokeAsync("DocumentRetrieved", transactionId, null);
             }
@@ -195,58 +204,67 @@ namespace lohost.Client.Services
         {
             _logger.Info($"Request received to send {document}");
 
-            string applicationFolder = _applicationData.GetApplicationFolder();
-
-            if (!string.IsNullOrEmpty(applicationFolder))
+            try
             {
-                string filePath = Path.Join(applicationFolder, document.Replace('/', Path.DirectorySeparatorChar));
+                string applicationFolder = _applicationData.GetApplicationFolder();
 
-                _logger.Debug($"Reading file from {filePath}");
+                if (!string.IsNullOrEmpty(applicationFolder))
+                {
+                    string filePath = Path.Join(applicationFolder, document.Replace('/', Path.DirectorySeparatorChar));
 
-                FileInfo fi = new FileInfo(filePath);
+                    _logger.Debug($"Reading file from {filePath}");
+
+                    FileInfo fi = new FileInfo(filePath);
                 
-                byte[] fileBytes = new byte[(int)fi.Length];
+                    byte[] fileBytes = new byte[(int)fi.Length];
 
-                using (BinaryReader br = new BinaryReader(new FileStream(filePath, FileMode.Open)))
-                {
-                    br.BaseStream.Seek(0, SeekOrigin.Begin);
-                    br.Read(fileBytes, 0, (int)fi.Length);
-                }
-
-                _logger.Debug($"File read from {filePath}: {fileBytes.Length}");
-
-                int noOfChunks = (int)Math.Ceiling((double)fileBytes.Length / CHUNK_SIZE);
-
-                _logger.Debug($"Number of chunks: {noOfChunks}");
-
-                if (noOfChunks > 1)
-                {
-                    List<byte> allBytes = new List<byte>();
-
-                    for (int i = 0; i < noOfChunks; i++)
+                    using (BinaryReader br = new BinaryReader(new FileStream(filePath, FileMode.Open)))
                     {
-                        _logger.Debug($"Reading chung no: {i}");
-
-                        int amountToTake = fileBytes.Length - (i * CHUNK_SIZE);
-                        if (amountToTake > CHUNK_SIZE) amountToTake = CHUNK_SIZE;
-
-                        _logger.Debug($"Chunk Size: {amountToTake}");
-
-                        allBytes.AddRange(fileBytes.Skip(i * CHUNK_SIZE).Take(amountToTake));
+                        br.BaseStream.Seek(0, SeekOrigin.Begin);
+                        br.Read(fileBytes, 0, (int)fi.Length);
                     }
 
-                    await _apiHubConnection.InvokeAsync("SentDocument", transactionId, Convert.ToBase64String(allBytes.ToArray()));
+                    _logger.Debug($"File read from {filePath}: {fileBytes.Length}");
+
+                    int noOfChunks = (int)Math.Ceiling((double)fileBytes.Length / CHUNK_SIZE);
+
+                    _logger.Debug($"Number of chunks: {noOfChunks}");
+
+                    if (noOfChunks > 1)
+                    {
+                        List<byte> allBytes = new List<byte>();
+
+                        for (int i = 0; i < noOfChunks; i++)
+                        {
+                            _logger.Debug($"Reading chung no: {i}");
+
+                            int amountToTake = fileBytes.Length - (i * CHUNK_SIZE);
+                            if (amountToTake > CHUNK_SIZE) amountToTake = CHUNK_SIZE;
+
+                            _logger.Debug($"Chunk Size: {amountToTake}");
+
+                            allBytes.AddRange(fileBytes.Skip(i * CHUNK_SIZE).Take(amountToTake));
+                        }
+
+                        await _apiHubConnection.InvokeAsync("SentDocument", transactionId, Convert.ToBase64String(allBytes.ToArray()));
+                    }
+                    else
+                    {
+                        await _apiHubConnection.InvokeAsync("SentDocument", transactionId, Convert.ToBase64String(fileBytes));
+                    }
                 }
                 else
                 {
-                    await _apiHubConnection.InvokeAsync("SentDocument", transactionId, Convert.ToBase64String(fileBytes));
+                    _logger.Error($"Unable to find application folder");
+
+                    await _apiHubConnection.InvokeAsync("SentDocument", transactionId, null);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                _logger.Error($"Unable to find application folder");
+                _logger.Error($"Error sending document: {document}", ex);
 
-                await _apiHubConnection.InvokeAsync("SentDocument", transactionId, null);
+                await _apiHubConnection.InvokeAsync("DocumentRetrieved", transactionId, null);
             }
         }
 
@@ -254,54 +272,63 @@ namespace lohost.Client.Services
         {
             _logger.Info($"Request received to send chunk for {document}");
 
-            string applicationFolder = _applicationData.GetApplicationFolder();
-
-            if (!string.IsNullOrEmpty(applicationFolder))
+            try
             {
-                string filePath = Path.Join(applicationFolder, document.Replace('/', Path.DirectorySeparatorChar));
+                string applicationFolder = _applicationData.GetApplicationFolder();
 
-                int readCount = (int)(endRange - startRange);
-
-                byte[] fileBytes = new byte[readCount];
-
-                using (BinaryReader br = new BinaryReader(new FileStream(filePath, FileMode.Open)))
+                if (!string.IsNullOrEmpty(applicationFolder))
                 {
-                    br.BaseStream.Seek(startRange, SeekOrigin.Begin);
-                    br.Read(fileBytes, 0, readCount);
-                }
+                    string filePath = Path.Join(applicationFolder, document.Replace('/', Path.DirectorySeparatorChar));
 
-                _logger.Debug($"File read from {filePath}: {fileBytes.Length}");
+                    int readCount = (int)(endRange - startRange);
 
-                int noOfChunks = (int)Math.Ceiling((double)fileBytes.Length / CHUNK_SIZE);
+                    byte[] fileBytes = new byte[readCount];
 
-                _logger.Debug($"Number of chunks: {noOfChunks}");
-
-                if (noOfChunks > 1)
-                {
-                    for (int i = 0; i < noOfChunks; i++)
+                    using (BinaryReader br = new BinaryReader(new FileStream(filePath, FileMode.Open)))
                     {
-                        _logger.Debug($"Sending chung no: {i+1}");
+                        br.BaseStream.Seek(startRange, SeekOrigin.Begin);
+                        br.Read(fileBytes, 0, readCount);
+                    }
 
-                        int amountToTake = fileBytes.Length - (i * CHUNK_SIZE);
-                        if (amountToTake > CHUNK_SIZE) amountToTake = CHUNK_SIZE;
+                    _logger.Debug($"File read from {filePath}: {fileBytes.Length}");
 
-                        _logger.Debug($"Chunk Size: {amountToTake}");
+                    int noOfChunks = (int)Math.Ceiling((double)fileBytes.Length / CHUNK_SIZE);
 
-                        await _apiHubConnection.InvokeAsync("SentDocumentChunk", transactionId, i, Convert.ToBase64String(fileBytes.Skip(i * CHUNK_SIZE).Take(amountToTake).ToArray()), (i == noOfChunks - 1));
+                    _logger.Debug($"Number of chunks: {noOfChunks}");
+
+                    if (noOfChunks > 1)
+                    {
+                        for (int i = 0; i < noOfChunks; i++)
+                        {
+                            _logger.Debug($"Sending chung no: {i+1}");
+
+                            int amountToTake = fileBytes.Length - (i * CHUNK_SIZE);
+                            if (amountToTake > CHUNK_SIZE) amountToTake = CHUNK_SIZE;
+
+                            _logger.Debug($"Chunk Size: {amountToTake}");
+
+                            await _apiHubConnection.InvokeAsync("SentDocumentChunk", transactionId, i, Convert.ToBase64String(fileBytes.Skip(i * CHUNK_SIZE).Take(amountToTake).ToArray()), (i == noOfChunks - 1));
+                        }
+                    }
+                    else
+                    {
+                        _logger.Debug($"Sending chung no: {1}");
+
+                        await _apiHubConnection.InvokeAsync("SentDocumentChunk", transactionId, 0, Convert.ToBase64String(fileBytes), true);
                     }
                 }
                 else
                 {
-                    _logger.Debug($"Sending chung no: {1}");
+                    _logger.Error($"Unable to find application folder");
 
-                    await _apiHubConnection.InvokeAsync("SentDocumentChunk", transactionId, 0, Convert.ToBase64String(fileBytes), true);
+                    await _apiHubConnection.InvokeAsync("SentDocumentChunk", transactionId, 0, null, true);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                _logger.Error($"Unable to find application folder");
+                _logger.Error($"Error sending document chunk: {document}", ex);
 
-                await _apiHubConnection.InvokeAsync("SentDocumentChunk", transactionId, 0, null, true);
+                await _apiHubConnection.InvokeAsync("DocumentRetrieved", transactionId, null);
             }
         }
     }

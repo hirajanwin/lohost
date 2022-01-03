@@ -23,10 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\lohost.API.Logging\lohost.API.Logging.csproj" />
     <ProjectReference Include="..\lohost.API.Models\lohost.API.Models.csproj" />
     <ProjectReference Include="..\lohost.API.Request\lohost.API.Request.csproj" />
     <ProjectReference Include="..\lohost.API.Response\lohost.API.Response.csproj" />
-    <ProjectReference Include="..\lohost.Logging\lohost.API.Logging.csproj" />
     <ProjectReference Include="..\lohost.Models\lohost.Models.csproj" />
   </ItemGroup>
 
