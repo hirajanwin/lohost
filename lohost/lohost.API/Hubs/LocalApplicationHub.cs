@@ -15,6 +15,7 @@ namespace lohost.API.Hubs
         private static Dictionary<string, ApplicationConnection> _ConnectedApplications = new Dictionary<string, ApplicationConnection>();
 
         private static object _registerApplicationLock = new object();
+        private static object _listApplicationLock = new object();
 
         private SystemLogging _systemLogging;
 
@@ -53,6 +54,22 @@ namespace lohost.API.Hubs
             }
 
             await base.OnDisconnectedAsync(ex);
+        }
+
+        public static List<ListingApplication> GetAllListedApplications()
+        {
+            List<ListingApplication> listingApplications = new List<ListingApplication>();
+
+            foreach (ApplicationConnection application in _ConnectedApplications.Where(ca => ca.Value.IsListed).Select(ca => ca.Value))
+            {
+                listingApplications.Add(new ListingApplication()
+                {
+                    Name = application.Name,
+                    Tags = application.Tags
+                });
+            }
+
+            return listingApplications;
         }
 
         public async Task Register(string connectionId, string applicationId, string applicationKey, string applicationPaths)
@@ -142,9 +159,22 @@ namespace lohost.API.Hubs
             }
         }
 
-        public async Task ListApplication(string applicationId, string name, string[] tags)
+        public async Task ListApplication(string applicationId, string applicationPaths, string name, string[] tags)
         {
+            applicationId = applicationId.ToLower();
 
+            if (_ConnectedApplications.ContainsKey(applicationId))
+            {
+                if (string.IsNullOrEmpty(applicationPaths) || applicationPaths.Equals("*"))
+                {
+                    lock (_listApplicationLock)
+                    {
+                        _ConnectedApplications[applicationId].IsListed = true;
+                        _ConnectedApplications[applicationId].Name = name;
+                        _ConnectedApplications[applicationId].Tags = tags;
+                    }
+                }
+            }
         }
 
         public async Task<ExternalDocument> GetDocument(string applicationId, string document)

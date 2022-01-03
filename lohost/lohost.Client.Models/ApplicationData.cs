@@ -6,6 +6,8 @@
         {
             ApplicationId = GenerateDefaultAddress();
 
+            IsListed = false;
+
             ApplicationFolder = "App";
 
             LogsFolder = "Logs";
@@ -16,6 +18,12 @@
         public string ApplicationId { get; set; }
 
         public string ApplicationKey { get; set; }
+
+        public bool IsListed { get; set; }
+
+        public string Name { get; set; }
+
+        public string Tags { get; set; }
 
         public string ExecutingLocation { get; }
 

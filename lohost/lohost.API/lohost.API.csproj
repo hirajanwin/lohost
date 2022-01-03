@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\lohost.API.Helpers\lohost.API.Helpers.csproj" />
     <ProjectReference Include="..\lohost.API.Models\lohost.API.Models.csproj" />
     <ProjectReference Include="..\lohost.API.Request\lohost.API.Request.csproj" />
     <ProjectReference Include="..\lohost.API.Response\lohost.API.Response.csproj" />

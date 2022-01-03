@@ -98,12 +98,14 @@ namespace lohost.Client.Services
                 {
                     _logger.Debug($"Connection ID: {_apiHubConnection.ConnectionId}");
 
+                    string response = await _apiHubConnection.InvokeAsync<string>("Handshake", "1234");
+
                     string apiKeyParam = !string.IsNullOrEmpty(_applicationData.ApplicationKey) ? _applicationData.ApplicationKey : string.Empty;
                     string appPathsParam = ((_applicationData.ApplicationPaths != null) && (_applicationData.ApplicationPaths.Length > 0)) ? string.Join("|", _applicationData.ApplicationPaths) : string.Empty;
 
                     await _apiHubConnection.InvokeAsync("Register", _apiHubConnection.ConnectionId, _applicationData.ApplicationId, apiKeyParam, appPathsParam);
 
-                    string response = await _apiHubConnection.InvokeAsync<string>("Handshake", "1234");
+                    if (_applicationData.IsListed) await _apiHubConnection.InvokeAsync("ListApplication", _applicationData.ApplicationId, appPathsParam, _applicationData.Name, _applicationData.Tags);
 
                     _handshakeComplete = true;
 
