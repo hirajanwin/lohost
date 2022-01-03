@@ -140,7 +140,7 @@ namespace lohost.Client.Services
 
             if (!string.IsNullOrEmpty(applicationFolder))
             {
-                string filePath = Path.Join(applicationFolder, document.Replace(':', '\\'));
+                string filePath = Path.Join(applicationFolder, document.Replace('/', Path.DirectorySeparatorChar));
                 if (File.Exists(filePath))
                 {
                     _logger.Debug($"Getting file information for {filePath}");
@@ -182,11 +182,19 @@ namespace lohost.Client.Services
 
             if (!string.IsNullOrEmpty(applicationFolder))
             {
-                string filePath = Path.Join(applicationFolder, document.Replace(':', '\\'));
+                string filePath = Path.Join(applicationFolder, document.Replace('/', Path.DirectorySeparatorChar));
 
                 _logger.Debug($"Reading file from {filePath}");
 
-                byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
+                FileInfo fi = new FileInfo(filePath);
+                
+                byte[] fileBytes = new byte[(int)fi.Length];
+
+                using (BinaryReader br = new BinaryReader(new FileStream(filePath, FileMode.Open)))
+                {
+                    br.BaseStream.Seek(0, SeekOrigin.Begin);
+                    br.Read(fileBytes, 0, (int)fi.Length);
+                }
 
                 _logger.Debug($"File read from {filePath}: {fileBytes.Length}");
 
@@ -233,7 +241,7 @@ namespace lohost.Client.Services
 
             if (!string.IsNullOrEmpty(applicationFolder))
             {
-                string filePath = Path.Join(applicationFolder, document.Replace(':', '\\'));
+                string filePath = Path.Join(applicationFolder, document.Replace('/', Path.DirectorySeparatorChar));
 
                 int readCount = (int)(endRange - startRange);
 
