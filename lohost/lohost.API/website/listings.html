@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>lohost</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/app.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: "/apps.json",
+                success: function (res) {
+                    if (res.length > 0) {
+                        for (let i = 0; i < res.length; i++) {
+                            let siteHTML = "<div class='site-container group'>" +
+                                "<div class='site-name'><a href='" + res[i].url + "' target='_blank'>" + res[i].name + "</a></div>";
+
+                            if ((res[i].tags != null) && (res[i].tags.length > 0)) {
+                                siteHTML += "<div class='site-tags'>";
+
+                                for (let j = 0; j < res[i].tags.length; j++) {
+                                    siteHTML += "#" + res[i].tags[j] + " ";
+                                }
+
+                                siteHTML += "</div>";
+                            }
+
+                            siteHTML += "</div>";
+
+                            $("#sites-container").append(siteHTML);
+                        }
+                    }
+                    else {
+                        $("#sites-container").append("<i>There are currently no listed sites, but that's not the same as no sites...</i>");
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="header">
+        <div class="content">
+            <div><a href="https://github.com/gmarland/lohost.io" target="_blank"><img id="github-link" src="/img/GitHub.png" border="0" /></a></div>
+            <h1>lohost</h1>
+            <h2>Currently listed sites<br /><br/></h2>
+            <hr />
+            <div id="links-bar">
+                <div class="left"><a href="">Download website client installer</a></div>
+                <div class="right"><a href="/">Return to main</a></div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+    <div id="how-do">
+        <div class="content">
+            <div id="sites-container"></div>
+        </div>
+    </div>
+</body>
+</html>
