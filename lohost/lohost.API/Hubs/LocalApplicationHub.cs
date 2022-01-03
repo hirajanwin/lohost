@@ -140,6 +140,11 @@ namespace lohost.API.Hubs
             }
         }
 
+        public async Task ListApplication(string applicationId, string name, string[] tags)
+        {
+
+        }
+
         public async Task<ExternalDocument> GetDocument(string applicationId, string document)
         {
             applicationId = applicationId.ToLower();
