@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>lohost</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/app.css">
+</head>
+<body>
+    <div id="header">
+        <div class="content">
+            <div><a href="https://github.com/gmarland/lohost.io" target="_blank"><img id="github-link" src="/img/GitHub.png" border="0" /></a></div>
+            <h1>lohost</h1>
+            <h2>Distributed, decentralized and anonymized<br />local website hosting</h2>
+            <hr />
+            <div id="links-bar">
+                <div class="right"><a href="/">Return to main</a></div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+    <div id="how-do">
+        <div class="content">
+            <div class="group">
+                <h3>config.json</h3>
+                <p>The config.json file should immediately be appear in the root of the lohost folder when lohost.exe is ran, if one doesn't already exist. It is populated with defaults that can be changed to configure your website.</p>
+                <p>This is a JSON file and so standard JSON formatting applies.</p>
+                <p>Remember, the lohost.exe will need to be stopped and started again for any config changes to be reflected.</p>
+            </div>
+            <div class="group">
+                <h3>Options</h3>
+                <p><b>ApplicationId (Required)</b></p>
+                <p>This is the subdomain that the website will sit on lohost, https://{ApplicationId}.lohost.io. If the ApplicationId is already in use, the application will go into polling mode and check every 5 seconds if it now available.</p>
+                <p>Certain characters are not allowed as part of the ApplicationId: . ? / \ &</p>
+                <p><b>ApplicationKey (Optional)</b></p>
+                <p>The ApplicationKey is optional but is needed to relate different running lohost.exe instances. If the ApplicationId and the ApplicationKey are the same it is assumed they are the same application.</p>
+                <p>This parameter is also used in conjunction with the ApplicationPaths parameter to map different URL routes to different lohost.exe instances.</p>
+                <p>The final and most important thing to know about the ApplicationKey is that it puts a temporary lock on the ApplicationId subdomain. If you stop lohost.exe, it will not allow another lohost.exe instance to take your subdomain without a matching ApplicationKey for 10 minutes.</p>
+                <p><b>ApplicationPaths (Optional)</b></p>
+                <p>This is an optional config option but at least one of your ApplicationId instances must be running with an empty ApplicationPaths variable (making it the default route).</p>
+                <p>This parameter is a string array and should correspond to a relative path within your "App" folder. Once defined, this will become where the website will serve the document from.</p>
+                <p>An example, if you have a folder stucture "App/route/mine", you can put an entry into the ApplicationPaths parameter "ApplicationPaths": [ "App/route/mine" ]. If someone then goes to the URL https://{ApplicationId}.lohost.io/App/route/mine/test.html, it will be served from that lohost instance.   </p>
+                <p><b>IsListed (Required)</b></p>
+                <p>This config option determines if your website is listed on the lohost.io website, by default it is false.</p>
+                <p><b>Name (Optional)</b></p>
+                <p>This option is only used if the IsListed parameter is set to true. This is the name that your website will be listed as on the lohost.io website.</p>
+                <p><b>Tags (Optional)</b></p>
+                <p>This option is only used if the IsListed parameter is set to true. This is a JSON array that is used to tag your website on the lohost.io website.</p>
+                <p>An example of this would be, "Tags": [ "firstwebsite", "mine", "heyhey" ]</p>
+                <p><b>ApplicationFolder (Required)</b></p>
+                <p>This is the folder that your website will be hosted from. By default, this is "App" and it reall shouldn't be changed without reason.</p>
+                <p>If you have a burning desire to change it, it will work either via an absolute path, "MyWebsite", or a relative path "C:\MyWebsite"</p>
+                <p><b>LogsFolder (Required)</b></p>
+                <p>This is the folder where your website logs will be stored. By default, this is "Logs" and it reall shouldn't be changed without reason.</p>
+                <p>If you are a control freak and must change it, it will work either via an absolute path, "MyLogs", or a relative path "C:\MyLogs"</p>
+                <p><b>ExternalAPI (Required)</b></p>
+                <p>This is the API that the lohost client is connecting to in order to serve your website to the internet. This should ALWAYS be "https://lohost.io"</p>
+                <p>The only reason you would ever want to change this is if you are running your own instance of the API on your own endpoint. This will then also need to be changed for all of your lohost.exe configs.</p>
+            </div>
+            <div class="group">
+                <h3>Examples</h3>
+                <p>A example for a default lohost.exe instance:</p>
+                <p>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"ApplicationId": "mytestsite",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"ApplicationKey": "123",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"IsListed": true,<br/>&nbsp;&nbsp;&nbsp;&nbsp;"Name": "My test site",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"Tags": [ "firstwebsite", "mine", "heyhey" ],<br/>&nbsp;&nbsp;&nbsp;&nbsp;"ApplicationFolder": "App",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"LogsFolder": "Logs",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"ExternalAPI": "https://lohost.io",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"ApplicationPaths": null<br/>}</p>
+                <br/>
+                <p>A example for a lohost.exe instance for mapping specific routes:</p>
+                <p>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"ApplicationId": "mytestsite",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"ApplicationKey": "123",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"IsListed": true,<br/>&nbsp;&nbsp;&nbsp;&nbsp;"Name": "My test site",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"Tags": [ "firstwebsite", "mine", "heyhey" ],<br/>&nbsp;&nbsp;&nbsp;&nbsp;"ApplicationFolder": "App",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"LogsFolder": "Logs",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"ExternalAPI": "https://lohost.io",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"ApplicationPaths": [ "App/route/mine" ]<br/>}</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

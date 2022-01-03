@@ -25,8 +25,6 @@
 
         public string[] Tags { get; set; }
 
-        public string ExecutingLocation { get; }
-
         public string ApplicationFolder { get; set; }
 
         public string LogsFolder { get; set; }
@@ -42,18 +40,6 @@
 
         }
 
-        public string GetExecutingLocation()
-        {
-            if (string.IsNullOrEmpty(ExecutingLocation))
-            {
-                return Directory.GetCurrentDirectory();
-            }
-            else
-            {
-                return ExecutingLocation;
-            }
-        }
-
         public string GetApplicationFolder()
         {
             string applicationFolder;
@@ -66,7 +52,7 @@
             }
             catch (Exception)
             {
-                applicationFolder = Path.Join(GetExecutingLocation(), ApplicationFolder);
+                applicationFolder = Path.Join(Directory.GetCurrentDirectory(), ApplicationFolder);
             }
 
             if (!Directory.Exists(applicationFolder)) Directory.CreateDirectory(applicationFolder);
@@ -86,7 +72,7 @@
             }
             catch (Exception)
             {
-                logsFolder = Path.Join(GetExecutingLocation(), LogsFolder);
+                logsFolder = Path.Join(Directory.GetCurrentDirectory(), LogsFolder);
             }
 
             if (!Directory.Exists(logsFolder)) Directory.CreateDirectory(logsFolder);

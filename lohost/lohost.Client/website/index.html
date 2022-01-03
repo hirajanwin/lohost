@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>lohost</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/app.css">
+</head>
+<body>
+    <div id="header">
+        <div class="content">
+            <div><a href="https://github.com/gmarland/lohost.io" target="_blank"><img id="github-link" src="/img/GitHub.png" border="0" /></a></div>
+            <h1>lohost</h1>
+            <h2>Distributed, decentralized and anonymized<br />local website hosting</h2>
+            <hr />
+            <div id="links-bar">
+                <div class="right"><a href="/config.html">View config.json options</a></div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+    <div id="how-do">
+        <div class="content">
+            <div class="group">
+                <h3>Welcome to your lohost site!</h3>
+                <p>Guess what? This website you are looking at right now. It's running from your computer.</p>
+                <p>If you open the "App" directory, living in the folder of the lohost.exe you ran, you will see the index.html for this page. You can change the HTML in there, refresh this page and see the website immediately get updated.</p>
+                <p>You can send the URL of this site to a friend and they will be able to browse it, just like any other website.</p>
+            </div>
+            <div class="group">
+                <h3>Understanding the folder structure</h3>
+                <p>If you open up the lohost folder, you should see the following folder structure:</p>
+                <p>- App<br/>- Logs<br>- config.json<br/>- lohost.exe</p>
+                <p>If you want to use lohost further, you will need to understand what each thing does.</p>
+                <p><b>App</b></p>
+                <p>This is the folder that contains all the content for your website. When you want to put your website live, put it in this folder. Make sure to include an index.html in the root (like most applications) in order to give the website a starting point.</p>
+                <p><b>Logs</b></p>
+                <p>This folder contains all the logs from the running of your website. The logs will give you insight into what is being called as well as valuable debugging information.</p>
+                <p><b>config.json</b></p>
+                <p>This file is created when you run lohost.exe for the first time. It contains all the configuration options available for your site, including the name of your application subdomain.</p>
+                <p>You can see the config options via the "View config options" link. In order to have the changes reflected, you will need to stop and start the lohost.exe.</p>
+                <p><b>lohost.exe</b></p>
+                <p>This is the main executable for lohost. This appication needs to be running in order to make your website available.</p>
+            </div>
+            <div class="group">
+                <h3>Moving/distributing your website</h3>
+                <p>The lohost application is entirely self contained to the lohost folder. If you want to move the application to another location, you just need to move the lohost folder. </p>
+                <p>If you copy the lohost folder to another location and then run the lohost.exe it will become a backup for your application. If you stop one lohost.exe the other will take over and this can be done across any number of computers.</p>
+                <p>You can also make different routes be served by different lohost.exe instances. If you want https://{yourURL}.lohost.io/route1 to be served from computer and https://{yourURL}.lohost.io/route2 be served from another, this can be done via the config.json file.</p>
+            </div>
+            <div class="group">
+                <h3>Stay in touch!</h3>
+                <p>This application has been developed for fun by gareth@dotstorming.com. If you have any suggestions to make it better, get in touch!</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
