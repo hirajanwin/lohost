@@ -35,19 +35,22 @@
                 <p>- App<br/>- Logs<br>- config.json<br/>- lohost.exe</p>
                 <p>If you want to use lohost further, you will need to understand what each thing does.</p>
                 <p><b>App</b></p>
-                <p>This is the folder that contains all the content for your website. When you want to put your website live, put it in this folder. Make sure to include an index.html in the root (like most applications) in order to give the website a starting point.</p>
+                <p>This is the folder that contains all the content for your website. When you want to put your website live, put it in this folder. Make sure to include an index.html in the root (like most websites) in order to give your website a starting location.</p>
+                <br/>
                 <p><b>Logs</b></p>
                 <p>This folder contains all the logs from the running of your website. The logs will give you insight into what is being called as well as valuable debugging information.</p>
+                <br />
                 <p><b>config.json</b></p>
-                <p>This file is created when you run lohost.exe for the first time. It contains all the configuration options available for your site, including the name of your application subdomain.</p>
+                <p>This file is created when you run lohost.exe for the first time. It contains all the configuration options available for your site, including the name of your website subdomain.</p>
                 <p>You can see the config options via the "View config options" link. In order to have the changes reflected, you will need to stop and start the lohost.exe.</p>
+                <br />
                 <p><b>lohost.exe</b></p>
-                <p>This is the main executable for lohost. This appication needs to be running in order to make your website available.</p>
+                <p>This is the main executable for lohost. This application needs to be running in order to make your website available.</p>
             </div>
             <div class="group">
                 <h3>Moving/distributing your website</h3>
-                <p>The lohost application is entirely self contained to the lohost folder. If you want to move the application to another location, you just need to move the lohost folder. </p>
-                <p>If you copy the lohost folder to another location and then run the lohost.exe it will become a backup for your application. If you stop one lohost.exe the other will take over and this can be done across any number of computers.</p>
+                <p>The lohost application is entirely self contained to the lohost folder. If you want to move the application to another computer/folder, you just need to move the lohost folder. </p>
+                <p>If you copy the lohost folder to another computer/folder and then run the lohost.exe it will become a backup for your website. If you stop one lohost.exe the other will take over and this can be done across any number of computers.</p>
                 <p>You can also make different routes be served by different lohost.exe instances. If you want https://{yourURL}.lohost.io/route1 to be served from computer and https://{yourURL}.lohost.io/route2 be served from another, this can be done via the config.json file.</p>
             </div>
             <div class="group">

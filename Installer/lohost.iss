@@ -14,7 +14,7 @@ AppId={{16f8efc4-e861-46c1-999b-77d43dd2bf36}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName}
-UninstallDisplayName={#MyAppName}
+Uninstallable=no
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -35,16 +35,13 @@ SetupWindowTitle={#MyAppName}
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-[Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-
 [Files]                                                           
 Source: "build\lohost.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "build\App\img\GitHub.png"; DestDir: "{app}\App\img"; Flags: ignoreversion
+Source: "build\App\styles\app.css"; DestDir: "{app}\App\styles"; Flags: ignoreversion
+Source: "build\App\config.html"; DestDir: "{app}\App"; Flags: ignoreversion
+Source: "build\App\index.html"; DestDir: "{app}\App"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-
-[Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
