@@ -453,3 +453,6 @@ $RECYCLE.BIN/
 !.vscode/launch.json
 !.vscode/extensions.json
 /lohost/lohost.Client/config.json
+
+/Installer/build/
+/Installer/Output/
