@@ -56,20 +56,21 @@ namespace lohost.API.Hubs
             await base.OnDisconnectedAsync(ex);
         }
 
-        public static List<ListingApplication> GetAllListedApplications()
+        public static IList<ListedApplication> GetAllListedApplications()
         {
-            List<ListingApplication> listingApplications = new List<ListingApplication>();
+            List<ListedApplication> listedApplications = new List<ListedApplication>();
 
             foreach (ApplicationConnection application in _ConnectedApplications.Where(ca => ca.Value.IsListed).Select(ca => ca.Value))
             {
-                listingApplications.Add(new ListingApplication()
+                listedApplications.Add(new ListedApplication()
                 {
+                    Id = application.Id,
                     Name = application.Name,
                     Tags = application.Tags
                 });
             }
 
-            return listingApplications;
+            return listedApplications;
         }
 
         public async Task Register(string connectionId, string applicationId, string applicationKey, string applicationPaths)
@@ -111,6 +112,7 @@ namespace lohost.API.Hubs
                                     {
                                         ApplicationConnection applicationConnection = new ApplicationConnection()
                                         {
+                                            Id = applicationId,
                                             Key = applicationKey
                                         };
 
@@ -126,7 +128,10 @@ namespace lohost.API.Hubs
                             }
                             else
                             {
-                                ApplicationConnection applicationConnection = new ApplicationConnection();
+                                ApplicationConnection applicationConnection = new ApplicationConnection()
+                                {
+                                    Id = applicationId
+                                };
 
                                 if (!string.IsNullOrEmpty(applicationKey)) applicationConnection.Key = applicationKey;
 

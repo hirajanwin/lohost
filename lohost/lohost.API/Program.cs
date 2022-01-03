@@ -1,10 +1,7 @@
 using lohost.API.Controllers;
 using lohost.API.Hubs;
 using lohost.API.Logging;
-using lohost.API.Models;
 using lohost.API.Response;
-using Newtonsoft.Json.Linq;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,47 +58,9 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
         }
         else
         {
-            if (queryPath.Trim('/').Equals("apps.json"))
-            {
-                JArray apps = new JArray();
+            LohostWebsite lohostWebsite = new LohostWebsite(systemLogging, hostingLocation);
 
-                foreach (ListingApplication app in LocalApplicationHub.GetAllListedApplications())
-                {
-                    JArray tags = new JArray();
-                    foreach (string tag in app.Tags) tags.Add(tag);
-
-                    apps.Add(new JObject()
-                    {
-                        { "name", app.Name },
-                        { "tags", tags }
-                    });
-                }
-
-                documentResponse = new DocumentResponse()
-                {
-                    DocumentPath = queryPath,
-                    DocumentData = Encoding.ASCII.GetBytes(apps.ToString())
-                };
-            }
-            else
-            {
-                string websitePath = Path.Join(Directory.GetCurrentDirectory(), "website", queryPath.Trim('/').Replace('/', '\\'));
-
-                systemLogging.Debug($"Local website path: {websitePath}");
-
-                if (File.Exists(websitePath))
-                {
-                    documentResponse = new DocumentResponse()
-                    {
-                        DocumentPath = queryPath,
-                        DocumentData = File.ReadAllBytes(websitePath)
-                    };
-                }
-                else
-                {
-                    documentResponse = null;
-                }
-            }
+            documentResponse = await lohostWebsite.GetDocument(queryPath);
         }
     }
     catch (Exception ex)

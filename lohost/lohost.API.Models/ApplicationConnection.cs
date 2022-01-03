@@ -6,6 +6,8 @@ namespace lohost.API.Models
 {
     public class ApplicationConnection
     {
+        public string Id { get; set; }
+
         public string Key { get; set; }
 
         public bool IsListed { get; set; } = false;
