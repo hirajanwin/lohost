@@ -27,50 +27,65 @@ namespace lohost.Client.Services
 
         public async Task ConnectSignalR()
         {
+            bool applicationDataValid = true;
 
-            if (_apiHubConnection != null)
+            try
             {
-                try
-                {
-                    await _apiHubConnection.StopAsync();
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error($"Error stopping connction to {_applicationData.GetRegisteredAddress()}", ex);
-                }
+                _applicationData.ValidateApplicationData();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
 
-                _apiHubConnection = null;
+                applicationDataValid = false;
             }
 
-            _apiHubConnection = new HubConnectionBuilder().WithUrl(_applicationData.ExternalAPI + $"/ApplicationHub").Build();
-   
-            _apiHubConnection.Closed += async (error) =>
+            if (applicationDataValid)
             {
-                if (_handshakeComplete)
+                if (_apiHubConnection != null)
                 {
-                    _logger.Error("SignalR connection aborted", error);
+                    try
+                    {
+                        await _apiHubConnection.StopAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"Error stopping connction to {_applicationData.GetRegisteredAddress()}", ex);
+                    }
 
-                    await Task.Delay(1000);
+                    _apiHubConnection = null;
                 }
-                else
+
+                _apiHubConnection = new HubConnectionBuilder().WithUrl(_applicationData.ExternalAPI + $"/ApplicationHub").Build();
+
+                _apiHubConnection.Closed += async (error) =>
                 {
-                    _logger.Info($"Unable to register this client to {_applicationData.GetRegisteredAddress()}, waiting for it to become available");
+                    if (_handshakeComplete)
+                    {
+                        _logger.Error("SignalR connection aborted", error);
 
-                    await Task.Delay(5000);
-                }
+                        await Task.Delay(1000);
+                    }
+                    else
+                    {
+                        _logger.Info($"Unable to register this client to {_applicationData.GetRegisteredAddress()}, waiting for it to become available");
 
-                if (_reconnect) await ConnectSignalR();
-            };
+                        await Task.Delay(5000);
+                    }
 
-            _apiHubConnection.On("GetDocument", async (string transactionId, string document) => await GetDocument(transactionId, document));
+                    if (_reconnect) await ConnectSignalR();
+                };
 
-            _apiHubConnection.On("GetChunkSize", async (string transactionId) => await GetChunkSize(transactionId));
+                _apiHubConnection.On("GetDocument", async (string transactionId, string document) => await GetDocument(transactionId, document));
 
-            _apiHubConnection.On("SendDocument", async (string transactionId, string document) => await SendDocument(transactionId, document));
+                _apiHubConnection.On("GetChunkSize", async (string transactionId) => await GetChunkSize(transactionId));
 
-            _apiHubConnection.On("SendDocumentChunk", async (string transactionId, string document, long startRange, long endRange) => await SendDocumentChunk(transactionId, document, startRange, endRange));
+                _apiHubConnection.On("SendDocument", async (string transactionId, string document) => await SendDocument(transactionId, document));
 
-            await Start();
+                _apiHubConnection.On("SendDocumentChunk", async (string transactionId, string document, long startRange, long endRange) => await SendDocumentChunk(transactionId, document, startRange, endRange));
+
+                await Start();
+            }
         }
 
         public async Task Start()

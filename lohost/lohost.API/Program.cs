@@ -35,53 +35,60 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
     string urlHost = httpContext.Request.Host.ToString();
     string queryPath = httpContext.Request.Path.ToString();
 
-    string[] queryPathParts = queryPath.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-
-    if ((queryPathParts.Length == 0) || !queryPathParts.Last().Contains('.'))
+    if (!queryPath.Contains(".."))
     {
-        if (queryPathParts.Length == 0) queryPath = "/index.html";
-        else queryPath = $"/{string.Join('/', queryPathParts)}/index.html";
-    }
+        string[] queryPathParts = queryPath.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
-    var applicationId = urlHost.Replace(hostingLocation, string.Empty, StringComparison.OrdinalIgnoreCase).Trim('.');
-
-    DocumentResponse? documentResponse;
-
-    try
-    {
-        // This is a request for a remote application.
-        if (!string.IsNullOrEmpty(applicationId))
+        if ((queryPathParts.Length == 0) || !queryPathParts.Last().Contains('.'))
         {
-            LocalApplication localApplication = new LocalApplication(systemLogging, localIntegrationHub);
+            if (queryPathParts.Length == 0) queryPath = "/index.html";
+            else queryPath = $"/{string.Join('/', queryPathParts)}/index.html";
+        }
 
-            documentResponse = await localApplication.GetDocument(applicationId, queryPath);
+        var applicationId = urlHost.Replace(hostingLocation, string.Empty, StringComparison.OrdinalIgnoreCase).Trim('.');
+
+        DocumentResponse? documentResponse;
+
+        try
+        {
+            // This is a request for a remote application.
+            if (!string.IsNullOrEmpty(applicationId))
+            {
+                LocalApplication localApplication = new LocalApplication(systemLogging, localIntegrationHub);
+
+                documentResponse = await localApplication.GetDocument(applicationId, queryPath);
+            }
+            else
+            {
+                LohostWebsite lohostWebsite = new LohostWebsite(systemLogging, hostingLocation);
+
+                documentResponse = await lohostWebsite.GetDocument(queryPath);
+            }
+        }
+        catch (Exception ex)
+        {
+            systemLogging.Error($"Error retrieving {urlHost}{queryPath}", ex);
+
+            documentResponse = null;
+        }
+
+        if ((documentResponse != null) && (documentResponse.DocumentFound()))
+        {
+            IResponse response = documentResponse.GetResponse();
+
+            switch (response.GetResultType())
+            {
+                case "text":
+                    return Results.Text((string)response.GetContent(), response.GetContentType());
+                case "file":
+                    return Results.File((byte[])response.GetContent(), response.GetContentType());
+                default:
+                    return Results.NoContent();
+            }
         }
         else
         {
-            LohostWebsite lohostWebsite = new LohostWebsite(systemLogging, hostingLocation);
-
-            documentResponse = await lohostWebsite.GetDocument(queryPath);
-        }
-    }
-    catch (Exception ex)
-    {
-        systemLogging.Error($"Error retrieving {urlHost}{queryPath}", ex);
-
-        documentResponse = null;
-    }
-
-    if ((documentResponse != null) && (documentResponse.DocumentFound()))
-    {
-        IResponse response = documentResponse.GetResponse();
-
-        switch (response.GetResultType())
-        {
-            case "text":
-                return Results.Text((string)response.GetContent(), response.GetContentType());
-            case "file":
-                return Results.File((byte[])response.GetContent(), response.GetContentType());
-            default:
-                return Results.NoContent();
+            return Results.NotFound();
         }
     }
     else

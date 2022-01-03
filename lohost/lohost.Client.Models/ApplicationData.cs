@@ -33,11 +33,33 @@
 
         public string[] ApplicationPaths { get; set; }
 
+        public void ValidateApplicationData()
+        {
+            if (string.IsNullOrEmpty(ApplicationId)) throw new Exception("You must provide a valid ApplicationId");
+
+            if (ApplicationId.Contains('.')) throw new Exception("An ApplicationId cannot contain a .");
+
+            if (ApplicationId.Contains('?')) throw new Exception("An ApplicationId cannot contain a ?");
+
+            if (ApplicationId.Contains('/')) throw new Exception("An ApplicationId cannot contain a /");
+
+            if (ApplicationId.Contains('\\')) throw new Exception("An ApplicationId cannot contain a \\");
+
+            if (ApplicationId.Contains('&')) throw new Exception("An ApplicationId cannot contain a &");
+
+            if (ApplicationId.Contains('#')) throw new Exception("An ApplicationId cannot contain a #");
+
+            if (string.IsNullOrEmpty(ApplicationFolder)) throw new Exception("You must provide a valid ApplicationFolder");
+
+            if (string.IsNullOrEmpty(LogsFolder)) throw new Exception("You must provide a valid LogsFolder");
+
+            if (string.IsNullOrEmpty(ExternalAPI)) throw new Exception("You must provide a valid ExternalAPI");
+        }
+
         public string GetRegisteredAddress()
         {
             if (ExternalAPI.StartsWith("https://")) return $"https://{ApplicationId}.{ExternalAPI.Substring("https://".Length)}";
             else return $"http://{ApplicationId}.{ExternalAPI.Substring("http://".Length)}";
-
         }
 
         public string GetApplicationFolder()
