@@ -4,7 +4,6 @@ using System.Runtime.Caching;
 using Microsoft.AspNet.SignalR.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using lohost.API.Models;
-using lohost.API.Helpers;
 using lohost.API.Logging;
 
 namespace lohost.API.Hubs
@@ -14,6 +13,8 @@ namespace lohost.API.Hubs
     {
         // Probably should be moved to Redis at some point
         private static Dictionary<string, ApplicationConnection> _ConnectedApplications = new Dictionary<string, ApplicationConnection>();
+
+        private static object _registerApplicationLock = new object();
 
         private SystemLogging _systemLogging;
 
@@ -29,12 +30,16 @@ namespace lohost.API.Hubs
 
         public override async Task OnDisconnectedAsync(Exception ex)
         {
-            if (_ConnectedApplications.Any(ca => ca.Value.ConnectionId == Context.ConnectionId))
+            foreach (var applicationConnection in _ConnectedApplications.Where(kvp => kvp.Value.HasApplicationRouteConnection(Context.ConnectionId)).ToList())
             {
-                foreach (var applicationConnection in _ConnectedApplications.Where(kvp => kvp.Value.ConnectionId == Context.ConnectionId).ToList())
+                if (!string.IsNullOrEmpty(applicationConnection.Value.Key))
                 {
-                    if (!string.IsNullOrEmpty(applicationConnection.Value.Key))
+                    bool isEmpty = applicationConnection.Value.RemoveApplicationRouteConnection(Context.ConnectionId);
+
+                    if (isEmpty)
                     {
+                        _ConnectedApplications.Remove(applicationConnection.Key);
+
                         MemoryCache connectedApplicationLockCache = MemoryCache.Default;
 
                         if (connectedApplicationLockCache.Contains(applicationConnection.Key)) connectedApplicationLockCache.Remove(applicationConnection.Key);
@@ -44,8 +49,6 @@ namespace lohost.API.Hubs
                             AbsoluteExpiration = DateTime.UtcNow.AddMinutes(10)
                         });
                     }
-
-                    _ConnectedApplications.Remove(applicationConnection.Key);
                 }
             }
 
@@ -63,69 +66,68 @@ namespace lohost.API.Hubs
             {
                 bool addedConnection = false;
 
-                applicationId = applicationId.ToLower();
+                lock (_registerApplicationLock)
+                { 
+                    applicationId = applicationId.ToLower();
 
-                string[] appPaths;
+                    string[] appPaths;
 
-                if (!string.IsNullOrEmpty(applicationPaths)) appPaths = applicationPaths.Split(new char[] { '|' });
-                else appPaths = new string[] { "*" };
+                    if (!string.IsNullOrEmpty(applicationPaths)) appPaths = applicationPaths.Split(new char[] { '|' });
+                    else appPaths = new string[] { "*" };
 
-                for (int i = 0; i < appPaths.Length; i++)
-                {
-                    string appId;
-
-                    if (appPaths[i] == "*") appId = applicationId;
-                    else appId = $"{applicationId}:{appPaths[i].ToLower().TrimStart('/')}";
-
-                    string appPath = appPaths[i].ToLower().TrimStart('/');
-
-                    if (!_ConnectedApplications.ContainsKey(appId))
+                    for (int i = 0; i < appPaths.Length; i++)
                     {
-                        MemoryCache connectedApplicationLockCache = MemoryCache.Default;
+                        string appPath = appPaths[i].ToLower().TrimStart('/');
 
-                        if (connectedApplicationLockCache.Contains(appId))
+                        if (!_ConnectedApplications.ContainsKey(applicationId))
                         {
-                            ApplicationConnection applicationConnetion = (ApplicationConnection)connectedApplicationLockCache.Get(applicationId);
+                            MemoryCache connectedApplicationLockCache = MemoryCache.Default;
 
-                            if ((applicationConnetion != null) &&
-                                (!string.IsNullOrEmpty(applicationKey) && (applicationConnetion.Key == applicationKey)))
+                            if (connectedApplicationLockCache.Contains(applicationId))
                             {
-                                if (appPaths.Length > 0)
-                                {
-                                    _ConnectedApplications[appId] = new ApplicationConnection()
-                                    {
-                                        ConnectionId = connectionId,
-                                        Key = applicationKey,
-                                        Path = appPath
-                                    };
-                                }
+                                ApplicationConnection applicationConnetion = (ApplicationConnection)connectedApplicationLockCache.Get(applicationId);
 
-                                connectedApplicationLockCache.Remove(applicationId);
+                                if ((applicationConnetion != null) &&
+                                    (!string.IsNullOrEmpty(applicationKey) && (applicationConnetion.Key == applicationKey)))
+                                {
+                                    if (appPaths.Length > 0)
+                                    {
+                                        ApplicationConnection applicationConnection = new ApplicationConnection()
+                                        {
+                                            Key = applicationKey
+                                        };
+
+                                        applicationConnection.AddApplicationRoute(connectionId, appPath);
+
+                                        _ConnectedApplications[applicationId] = applicationConnection;
+                                    }
+
+                                    connectedApplicationLockCache.Remove(applicationId);
+
+                                    addedConnection = true;
+                                }
+                            }
+                            else
+                            {
+                                ApplicationConnection applicationConnection = new ApplicationConnection();
+
+                                if (!string.IsNullOrEmpty(applicationKey)) applicationConnection.Key = applicationKey;
+
+                                applicationConnection.AddApplicationRoute(connectionId, appPath);
+
+                                _ConnectedApplications[applicationId] = applicationConnection;
 
                                 addedConnection = true;
                             }
                         }
                         else
                         {
-                            if (string.IsNullOrEmpty(applicationKey))
+                            if (!_ConnectedApplications[applicationId].ApplicationRouteExists(appPath))
                             {
-                                _ConnectedApplications[appId] = new ApplicationConnection()
-                                {
-                                    ConnectionId = connectionId,
-                                    Path = appPath
-                                };
-                            }
-                            else
-                            {
-                                _ConnectedApplications[appId] = new ApplicationConnection()
-                                {
-                                    ConnectionId = connectionId,
-                                    Key = applicationKey,
-                                    Path = appPath
-                                };
-                            }
+                                _ConnectedApplications[applicationId].AddApplicationRoute(connectionId, appPath);
 
-                            addedConnection = true;
+                                addedConnection = true;
+                            }
                         }
                     }
                 }
@@ -149,15 +151,22 @@ namespace lohost.API.Hubs
         {
             applicationId = applicationId.ToLower();
 
-            string connectionId = HubHelper.GetConnectionId(_ConnectedApplications, applicationId, document);
-
-            if (!string.IsNullOrEmpty(connectionId))
+            if (_ConnectedApplications.ContainsKey(applicationId))
             {
-                ExternalDocumentRequest externalDocumentRequest = new ExternalDocumentRequest();
+                string connectionId = _ConnectedApplications[applicationId].GetConnectionId(document);
 
-                await Clients.Client(connectionId).SendAsync("GetDocument", externalDocumentRequest.TransactionId, document);
+                if (!string.IsNullOrEmpty(connectionId))
+                {
+                    ExternalDocumentRequest externalDocumentRequest = new ExternalDocumentRequest();
 
-                return externalDocumentRequest.Execute();
+                    await Clients.Client(connectionId).SendAsync("GetDocument", externalDocumentRequest.TransactionId, document);
+
+                    return externalDocumentRequest.Execute();
+                }
+                else
+                {
+                    throw new Exception("Unable to connect to local application");
+                }
             }
             else
             {
@@ -174,32 +183,39 @@ namespace lohost.API.Hubs
             });
         }
 
-        public async Task<int> GetChunkSize(string applicationId)
+        public async Task<int> GetChunkSize(string applicationId, string document)
         {
             applicationId = applicationId.ToLower();
 
-            string connectionId = HubHelper.GetAConnectionId(_ConnectedApplications, applicationId);
-
-            if (!string.IsNullOrEmpty(connectionId))
+            if (_ConnectedApplications.ContainsKey(applicationId))
             {
-                IntRequest intRequest = new IntRequest();
+                string connectionId = _ConnectedApplications[applicationId].GetConnectionId(document);
 
-                await Clients.Client(connectionId).SendAsync("GetChunkSize", intRequest.TransactionId);
-
-                int? chunkSize = intRequest.Execute();
-
-                if (chunkSize.HasValue)
+                if (!string.IsNullOrEmpty(connectionId))
                 {
-                    return chunkSize.Value;
+                    IntRequest intRequest = new IntRequest();
+
+                    await Clients.Client(connectionId).SendAsync("GetChunkSize", intRequest.TransactionId);
+
+                    int? chunkSize = intRequest.Execute();
+
+                    if (chunkSize.HasValue)
+                    {
+                        return chunkSize.Value;
+                    }
+                    else
+                    {
+                        throw new Exception("Error retrieving chunk size");
+                    }
                 }
                 else
                 {
-                    throw new Exception("Error retrieving chunk size");
+                    throw new Exception("Unable to fnd the local application");
                 }
             }
             else
             {
-                throw new Exception("Unable to fnd the local application");
+                throw new Exception("Unable to connect to local application");
             }
         }
 
@@ -216,23 +232,30 @@ namespace lohost.API.Hubs
         {
             applicationId = applicationId.ToLower();
 
-            string connectionId = HubHelper.GetConnectionId(_ConnectedApplications, applicationId, document);
-
-            if (!string.IsNullOrEmpty(connectionId))
+            if (_ConnectedApplications.ContainsKey(applicationId))
             {
-                ByteArrayRequest byteArrayRequest = new ByteArrayRequest();
+                string connectionId = _ConnectedApplications[applicationId].GetConnectionId(document);
 
-                await Clients.Client(connectionId).SendAsync("SendDocument", byteArrayRequest.TransactionId, document);
-
-                byte[] fileData = byteArrayRequest.Execute();
-
-                if (fileData != null)
+                if (!string.IsNullOrEmpty(connectionId))
                 {
-                    return fileData;
+                    ByteArrayRequest byteArrayRequest = new ByteArrayRequest();
+
+                    await Clients.Client(connectionId).SendAsync("SendDocument", byteArrayRequest.TransactionId, document);
+
+                    byte[] fileData = byteArrayRequest.Execute();
+
+                    if (fileData != null)
+                    {
+                        return fileData;
+                    }
+                    else
+                    {
+                        throw new Exception("Error download document");
+                    }
                 }
                 else
                 {
-                    throw new Exception("Error download document");
+                    throw new Exception("Unable to connect to local application");
                 }
             }
             else
@@ -256,23 +279,30 @@ namespace lohost.API.Hubs
         {
             applicationId = applicationId.ToLower();
 
-            string connectionId = HubHelper.GetConnectionId(_ConnectedApplications, applicationId, document);
-
-            if (!string.IsNullOrEmpty(connectionId))
+            if (_ConnectedApplications.ContainsKey(applicationId))
             {
-                ByteArrayRequest byteArrayRequest = new ByteArrayRequest();
+                string connectionId = _ConnectedApplications[applicationId].GetConnectionId(document);
 
-                await Clients.Client(connectionId).SendAsync("DownloadDocumentChunk", byteArrayRequest.TransactionId, document, startRange, endRange);
-
-                byte[] fileData = byteArrayRequest.Execute();
-
-                if (fileData != null)
+                if (!string.IsNullOrEmpty(connectionId))
                 {
-                    return fileData;
+                    ByteArrayRequest byteArrayRequest = new ByteArrayRequest();
+
+                    await Clients.Client(connectionId).SendAsync("DownloadDocumentChunk", byteArrayRequest.TransactionId, document, startRange, endRange);
+
+                    byte[] fileData = byteArrayRequest.Execute();
+
+                    if (fileData != null)
+                    {
+                        return fileData;
+                    }
+                    else
+                    {
+                        throw new Exception("Error download document");
+                    }
                 }
                 else
                 {
-                    throw new Exception("Error download document");
+                    throw new Exception("Unable to connect to local application");
                 }
             }
             else

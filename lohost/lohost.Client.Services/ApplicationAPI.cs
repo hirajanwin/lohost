@@ -96,7 +96,7 @@ namespace lohost.Client.Services
             {
                 try
                 {
-                    _logger.Info($"Connection ID: {_apiHubConnection.ConnectionId}");
+                    _logger.Debug($"Connection ID: {_apiHubConnection.ConnectionId}");
 
                     string apiKeyParam = !string.IsNullOrEmpty(_applicationData.ApplicationKey) ? _applicationData.ApplicationKey : string.Empty;
                     string appPathsParam = ((_applicationData.ApplicationPaths != null) && (_applicationData.ApplicationPaths.Length > 0)) ? string.Join("|", _applicationData.ApplicationPaths) : string.Empty;

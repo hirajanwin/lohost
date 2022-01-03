@@ -45,33 +45,42 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
 
     var applicationId = urlHost.Replace(hostingLocation, string.Empty, StringComparison.OrdinalIgnoreCase).Trim('.');
 
-    DocumentResponse documentResponse;
+    DocumentResponse? documentResponse;
 
-    // This is a request for a remote application.
-    if (!string.IsNullOrEmpty(applicationId))
+    try
     {
-        LocalApplication localApplication = new LocalApplication(systemLogging, localIntegrationHub);
-
-        documentResponse = await localApplication.GetDocument(applicationId, queryPath);
-    }
-    else
-    {
-        string websitePath = Path.Join(Directory.GetCurrentDirectory(), "website", queryPath.Trim('/').Replace('/', '\\'));
-
-        systemLogging.Debug($"Local website path: {websitePath}");
-
-        if (File.Exists(websitePath))
+        // This is a request for a remote application.
+        if (!string.IsNullOrEmpty(applicationId))
         {
-            documentResponse = new DocumentResponse()
-            {
-                DocumentPath = queryPath,
-                DocumentData = File.ReadAllBytes(websitePath)
-            };
+            LocalApplication localApplication = new LocalApplication(systemLogging, localIntegrationHub);
+
+            documentResponse = await localApplication.GetDocument(applicationId, queryPath);
         }
         else
         {
-            documentResponse = null;
+            string websitePath = Path.Join(Directory.GetCurrentDirectory(), "website", queryPath.Trim('/').Replace('/', '\\'));
+
+            systemLogging.Debug($"Local website path: {websitePath}");
+
+            if (File.Exists(websitePath))
+            {
+                documentResponse = new DocumentResponse()
+                {
+                    DocumentPath = queryPath,
+                    DocumentData = File.ReadAllBytes(websitePath)
+                };
+            }
+            else
+            {
+                documentResponse = null;
+            }
         }
+    }
+    catch (Exception ex)
+    {
+        systemLogging.Error($"Error retrieving {urlHost}{queryPath}", ex);
+
+        documentResponse = null;
     }
 
     if ((documentResponse != null) && (documentResponse.DocumentFound()))

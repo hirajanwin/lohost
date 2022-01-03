@@ -24,7 +24,7 @@ namespace lohost.API.Controllers
             {
                 _systemLogging.Info("Retrieved the selected file: " + document);
 
-                int chunkSize = await _localApplicationHub.GetChunkSize(applicationId);
+                int chunkSize = await _localApplicationHub.GetChunkSize(applicationId, document);
 
                 _systemLogging.Info("Retrieved file size: " + selectedFile.Size);
                 _systemLogging.Info("Retrieved chunk size: " + chunkSize);
