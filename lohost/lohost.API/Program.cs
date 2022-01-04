@@ -5,10 +5,28 @@ using lohost.API.Response;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var hostingLocation = builder.Configuration["Hosting:Location"];
-
 var systemLogging = new SystemLogging();
 var localIntegrationHub = new LocalApplicationHub(systemLogging);
+
+var hostingLocation = builder.Configuration["Hosting:Location"];
+
+string maxResponseSizeMBStr = builder.Configuration["Hosting:MaxResponseSizeMB"];
+
+int? maxResponseSizeMB = null;
+if (!string.IsNullOrEmpty(maxResponseSizeMBStr))
+{
+    try
+    {
+        maxResponseSizeMB = int.Parse(maxResponseSizeMBStr);
+    }
+    catch (Exception ex)
+    {
+        systemLogging.Error("Error reading MaxResponseSizeMB", ex);
+
+        maxResponseSizeMB = 1; // If there is an error, set it to 1MB in order to stop bandwidth from being smashed
+    }
+}
+
 
 // Might as well open it up
 builder.Services.AddCors(options =>
@@ -54,7 +72,7 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
             // This is a request for a remote application.
             if (!string.IsNullOrEmpty(applicationId))
             {
-                LocalApplication localApplication = new LocalApplication(systemLogging, localIntegrationHub);
+                LocalApplication localApplication = new LocalApplication(systemLogging, localIntegrationHub, maxResponseSizeMB);
 
                 documentResponse = await localApplication.GetDocument(applicationId, queryPath);
             }

@@ -10,10 +10,17 @@ namespace lohost.API.Controllers
         private readonly LocalApplicationHub _localApplicationHub;
         private readonly SystemLogging _systemLogging;
 
-        public LocalApplication(SystemLogging systemLogging, LocalApplicationHub localApplicationHub)
+        private long? maxResponseSizeB;
+
+        public LocalApplication(SystemLogging systemLogging, LocalApplicationHub localApplicationHub, int? maxResponseSizeMB)
         {
             _localApplicationHub = localApplicationHub;
             _systemLogging = systemLogging;
+
+            if (maxResponseSizeMB.HasValue)
+            {
+                maxResponseSizeB = (maxResponseSizeMB * 1024 * 1024);
+            }
         }
 
         public async Task<DocumentResponse> GetDocument(string applicationId, string document)
@@ -22,6 +29,22 @@ namespace lohost.API.Controllers
 
             if (selectedFile != null)
             {
+                if (maxResponseSizeB.HasValue)
+                {
+                    _systemLogging.Info($"Checking to see if file exceeds the max response size: {maxResponseSizeB}");
+
+                    if (selectedFile.Size > maxResponseSizeB.Value)
+                    {
+                        _systemLogging.Info($"{selectedFile.Path} exceeds the maximum file size: {selectedFile.Size}B");
+
+                        return new DocumentResponse()
+                        {
+                            DocumentPath = document,
+                            DocumentData = null
+                        };
+                    }
+                }
+
                 _systemLogging.Info("Retrieved the selected file: " + document);
 
                 int chunkSize = await _localApplicationHub.GetChunkSize(applicationId, document);

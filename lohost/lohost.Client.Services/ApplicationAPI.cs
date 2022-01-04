@@ -7,6 +7,7 @@ namespace lohost.Client.Services
 {
     public class ApplicationAPI
     {
+        // 4MB is a good chunk size to get past websocket limitations
         private int CHUNK_SIZE = (4 * 1024 * 1024);
 
         private Log _logger;

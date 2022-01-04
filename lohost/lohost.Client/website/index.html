@@ -32,11 +32,11 @@
             <div class="group">
                 <h3>Understanding the folder structure</h3>
                 <p>If you open up the lohost folder, you should see the following folder structure:</p>
-                <p>- App<br/>- Logs<br>- config.json<br/>- lohost.exe</p>
+                <p>- App<br />- Logs<br>- config.json<br />- lohost.exe</p>
                 <p>If you want to use lohost further, you will need to understand what each thing does.</p>
                 <p><b>App</b></p>
                 <p>This is the folder that contains all the content for your website. When you want to put your website live, put it in this folder. Make sure to include an index.html in the root (like most websites) in order to give your website a starting location.</p>
-                <br/>
+                <br />
                 <p><b>Logs</b></p>
                 <p>This folder contains all the logs from the running of your website. The logs will give you insight into what is being called as well as valuable debugging information.</p>
                 <br />
@@ -54,8 +54,13 @@
                 <p>You can also make different routes be served by different lohost.exe instances. If you want https://{yourURL}.lohost.io/route1 to be served from computer and https://{yourURL}.lohost.io/route2 be served from another, this can be done via the config.json file.</p>
             </div>
             <div class="group">
+                <h3>Limitations</h3>
+                <p>Currently, the only file types supported are those that are used to run a website, so .css, .html, .js, .jpg, .png, .gif and .json. This is pretty easy to extend in the future to any type of file type but those are a good starting point.</p>
+                <p>Also, documents are restricted to 1MB. This is configured in the lohost.io website API and can potentially be made infinitely large. Sharing is caring though and the limit is placed as to make lohost.io open to all. Should you want to run your own lohost server, you can open it to any amount!</p>
+            </div>
+            <div class="group">
                 <h3>Stay in touch!</h3>
-                <p>This application has been developed for fun by gareth@dotstorming.com. If you have any suggestions to make it better, get in touch!</p>
+                <p>This application has been developed for fun by Gareth Marland (gareth@dotstorming.com). If you have any suggestions to make it better, get in touch via email or GitHub!</p>
             </div>
         </div>
     </div>

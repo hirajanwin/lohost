@@ -25,10 +25,14 @@
                     return new CSSResponse(DocumentData);
                 case ".js":
                     return new JavaScriptResponse(DocumentData);
+                case ".ico":
+                    return new ICOResponse(DocumentData);
                 case ".jpg":
                     return new JPGResponse(DocumentData);
                 case ".png":
                     return new PNGResponse(DocumentData);
+                case ".gif":
+                    return new GIFResponse(DocumentData);
                 case ".json":
                     return new JSONResponse(DocumentData);
                 default:

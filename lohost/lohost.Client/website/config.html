@@ -41,9 +41,9 @@
                 <p>The final and most important thing to know about the ApplicationKey is that it puts a temporary lock on the ApplicationId subdomain. If you stop lohost.exe, it will not allow another lohost.exe instance to take your subdomain without a matching ApplicationKey for 10 minutes.</p>
                 <br />
                 <p><b>ApplicationPaths (Optional)</b></p>
-                <p>This is an optional config option but at least one of your ApplicationId instances must be running with an empty ApplicationPaths variable (making it the default route).</p>
-                <p>This parameter is a string array and should correspond to a relative path within your "App" folder. Once defined, this will become where the website will serve the document from.</p>
-                <p>An example, if you have a folder structure "App/route/mine", you can put an entry into the ApplicationPaths parameter "ApplicationPaths": [ "App/route/mine" ]. If someone then goes to the URL https://{ApplicationId}.lohost.io/App/route/mine/test.html, it will be served from that lohost instance.   </p>
+                <p>This is an optional config option but at least one of your ApplicationId instances must be running with an empty ApplicationPaths parameter (making it the default route).</p>
+                <p>This parameter is a JSON string array and should correspond to a relative path within your "App" folder. Once defined, this will become where the website will serve that routes documents from.</p>
+                <p>An example, if you have the folder structure "App/route/mine" in your local lohost folder, you can put an entry into the ApplicationPaths parameter "ApplicationPaths": [ "App/route/mine" ]. If someone then goes to the URL https://{ApplicationId}.lohost.io/App/route/mine/test.html, it will be served from that lohost instance.</p>
                 <br />
                 <p><b>IsListed (Required)</b></p>
                 <p>This config option determines if your website is listed on the lohost.io website, by default it is false.</p>
