@@ -43,6 +43,10 @@ namespace lohost.API.Controllers
                             DocumentData = null
                         };
                     }
+                    else
+                    {
+                        _logger.Info($"{selectedFile.Path} does not exceed the maximum file size: {selectedFile.Size}B");
+                    }
                 }
 
                 _logger.Info("Retrieved the selected file: " + document);
