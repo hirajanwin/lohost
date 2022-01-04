@@ -1,4 +1,4 @@
-using lohost.Client.Logging;
+using lohost.Logging;
 using lohost.Client.Models;
 using lohost.Client.Services;
 using Microsoft.Extensions.Hosting;
@@ -25,7 +25,7 @@ namespace lohost.Client
         {
             if (_applicationData == null) _applicationData = await _applicationDataService.GetApplicationData();
 
-            if (_logger == null) _logger = new Log(_applicationData.GetLogsFolder());
+            if (_logger == null) _logger = new Log(_applicationData.GetLogsFolder(), 7);
 
             _logger.Info("lohost client: v0.1");
 

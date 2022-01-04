@@ -1,12 +1,13 @@
 using lohost.API.Controllers;
 using lohost.API.Hubs;
-using lohost.API.Logging;
+using lohost.Logging;
 using lohost.API.Response;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var systemLogging = new SystemLogging();
-var localIntegrationHub = new LocalApplicationHub(systemLogging);
+var logger = new Log(Path.Join(Directory.GetCurrentDirectory(), "Logs"), 1);
+
+var localIntegrationHub = new LocalApplicationHub(logger);
 
 var hostingLocation = builder.Configuration["Hosting:Location"];
 
@@ -21,7 +22,7 @@ if (!string.IsNullOrEmpty(maxResponseSizeMBStr))
     }
     catch (Exception ex)
     {
-        systemLogging.Error("Error reading MaxResponseSizeMB", ex);
+        logger.Error("Error reading MaxResponseSizeMB", ex);
 
         maxResponseSizeMB = 1; // If there is an error, set it to 1MB in order to stop bandwidth from being smashed
     }
@@ -72,20 +73,20 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
             // This is a request for a remote application.
             if (!string.IsNullOrEmpty(applicationId))
             {
-                LocalApplication localApplication = new LocalApplication(systemLogging, localIntegrationHub, maxResponseSizeMB);
+                LocalApplication localApplication = new LocalApplication(logger, localIntegrationHub, maxResponseSizeMB);
 
                 documentResponse = await localApplication.GetDocument(applicationId, queryPath);
             }
             else
             {
-                LohostWebsite lohostWebsite = new LohostWebsite(systemLogging, hostingLocation);
+                LohostWebsite lohostWebsite = new LohostWebsite(logger, hostingLocation);
 
                 documentResponse = await lohostWebsite.GetDocument(queryPath);
             }
         }
         catch (Exception ex)
         {
-            systemLogging.Error($"Error retrieving {urlHost}{queryPath}", ex);
+            logger.Error($"Error retrieving {urlHost}{queryPath}", ex);
 
             documentResponse = null;
         }

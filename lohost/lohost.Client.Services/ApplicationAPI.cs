@@ -1,4 +1,4 @@
-﻿using lohost.Client.Logging;
+﻿using lohost.Logging;
 using lohost.Client.Models;
 using lohost.Models;
 using Microsoft.AspNetCore.SignalR.Client;

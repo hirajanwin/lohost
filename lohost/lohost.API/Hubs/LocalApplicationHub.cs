@@ -4,7 +4,7 @@ using System.Runtime.Caching;
 using Microsoft.AspNet.SignalR.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using lohost.API.Models;
-using lohost.API.Logging;
+using lohost.Logging;
 
 namespace lohost.API.Hubs
 {
@@ -17,11 +17,11 @@ namespace lohost.API.Hubs
         private static object _registerApplicationLock = new object();
         private static object _listApplicationLock = new object();
 
-        private SystemLogging _systemLogging;
+        private Log _logger;
 
-        public LocalApplicationHub(SystemLogging systemLogging)
+        public LocalApplicationHub(Log logger)
         {
-            _systemLogging = systemLogging;
+            _logger = logger;
         }
 
         public override async Task OnConnectedAsync()
@@ -75,10 +75,10 @@ namespace lohost.API.Hubs
 
         public async Task Register(string connectionId, string applicationId, string applicationKey, string applicationPaths)
         {
-            _systemLogging.Debug($"connectionId: {connectionId}");
-            _systemLogging.Debug($"applicationId: {applicationId}");
-            _systemLogging.Debug($"applicationKey: {applicationKey}");
-            _systemLogging.Debug($"applicationPaths: {applicationPaths}");
+            _logger.Debug($"connectionId: {connectionId}");
+            _logger.Debug($"applicationId: {applicationId}");
+            _logger.Debug($"applicationKey: {applicationKey}");
+            _logger.Debug($"applicationPaths: {applicationPaths}");
 
             if (!string.IsNullOrEmpty(applicationId))
             {
@@ -154,7 +154,7 @@ namespace lohost.API.Hubs
                     }
                 }
 
-                _systemLogging.Debug($"addedConnection: {addedConnection}");
+                _logger.Debug($"addedConnection: {addedConnection}");
 
                 if (!addedConnection) Context.Abort();
             }

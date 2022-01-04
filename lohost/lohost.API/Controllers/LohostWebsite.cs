@@ -1,5 +1,5 @@
 ﻿using lohost.API.Hubs;
-using lohost.API.Logging;
+using lohost.Logging;
 using lohost.API.Models;
 using lohost.API.Response;
 using Newtonsoft.Json.Linq;
@@ -9,13 +9,13 @@ namespace lohost.API.Controllers
 {
     public class LohostWebsite
     {
-        private readonly SystemLogging _systemLogging;
+        private readonly Log _logger;
 
         private readonly string _hostingLocation;
 
-        public LohostWebsite(SystemLogging systemLogging, string hostingLocation)
+        public LohostWebsite(Log logger, string hostingLocation)
         {
-            _systemLogging = systemLogging;
+            _logger = logger;
 
             _hostingLocation = hostingLocation;
         }
@@ -49,7 +49,7 @@ namespace lohost.API.Controllers
             {
                 string websitePath = Path.Join(Directory.GetCurrentDirectory(), "website", document.Trim('/').Replace('/', '\\'));
 
-                _systemLogging.Debug($"Local website path: {websitePath}");
+                _logger.Debug($"Local website path: {websitePath}");
 
                 if (File.Exists(websitePath))
                 {

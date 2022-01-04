@@ -2,18 +2,18 @@
 using Serilog.Core;
 using System;
 
-namespace lohost.Client.Logging
+namespace lohost.Logging
 {
     public class Log
     {
         private Logger _logger;
 
-        public Log(string path)
+        public Log(string path, int daysLogCount)
         {
             _logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .WriteTo.Console(Serilog.Events.LogEventLevel.Information)
-            .WriteTo.File($"{path}\\logfile.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
+            .WriteTo.File($"{path}\\logfile.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: daysLogCount)
             .CreateLogger();
         }
 

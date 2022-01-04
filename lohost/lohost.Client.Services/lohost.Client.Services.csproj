@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\lohost.Client.Logging\lohost.Client.Logging.csproj" />
     <ProjectReference Include="..\lohost.Client.Models\lohost.Client.Models.csproj" />
+    <ProjectReference Include="..\lohost.Logging\lohost.Logging.csproj" />
     <ProjectReference Include="..\lohost.Models\lohost.Models.csproj" />
   </ItemGroup>
 

@@ -9,9 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Client.Services", "l
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Client.Models", "lohost.Client.Models\lohost.Client.Models.csproj", "{00423979-04E0-4BCF-9B69-E9C9D646084F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Client.Logging", "lohost.Client.Logging\lohost.Client.Logging.csproj", "{1705950F-4ED0-4B36-90AB-86C4F71DD961}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.API.Logging", "lohost.API.Logging\lohost.API.Logging.csproj", "{699D49A5-B7BD-4846-8ABA-108764F67FC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.Logging", "lohost.Logging\lohost.Logging.csproj", "{1705950F-4ED0-4B36-90AB-86C4F71DD961}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lohost.API", "lohost.API\lohost.API.csproj", "{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}"
 EndProject
@@ -45,10 +43,6 @@ Global
 		{1705950F-4ED0-4B36-90AB-86C4F71DD961}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1705950F-4ED0-4B36-90AB-86C4F71DD961}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1705950F-4ED0-4B36-90AB-86C4F71DD961}.Release|Any CPU.Build.0 = Release|Any CPU
-		{699D49A5-B7BD-4846-8ABA-108764F67FC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{699D49A5-B7BD-4846-8ABA-108764F67FC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{699D49A5-B7BD-4846-8ABA-108764F67FC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{699D49A5-B7BD-4846-8ABA-108764F67FC1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E7DE672-80BF-47CD-A628-0036EF6AE2E2}.Release|Any CPU.ActiveCfg = Release|Any CPU

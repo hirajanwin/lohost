@@ -11,5 +11,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\lohost.Client.Services\lohost.Client.Services.csproj" />
+    <ProjectReference Include="..\lohost.Logging\lohost.Logging.csproj" />
   </ItemGroup>
 </Project>
