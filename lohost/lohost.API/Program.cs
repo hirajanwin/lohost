@@ -9,11 +9,17 @@ var logger = new Log(Path.Join(Directory.GetCurrentDirectory(), "Logs"), 1);
 
 var localIntegrationHub = new LocalApplicationHub(logger);
 
-var hostingLocation = builder.Configuration["Hosting:Location"];
+var internalURL = builder.Configuration["Hosting:InternalURL"];
+var externalURL = builder.Configuration["Hosting:ExternalURL"];
+
+Uri externalDomainURL = new Uri(externalURL);
+
+string externalDomain = externalDomainURL.Authority;
 
 string maxResponseSizeMBStr = builder.Configuration["Hosting:MaxResponseSizeMB"];
 
 int? maxResponseSizeMB = null;
+
 if (!string.IsNullOrEmpty(maxResponseSizeMBStr))
 {
     try
@@ -64,7 +70,7 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
             else queryPath = $"/{string.Join('/', queryPathParts)}/index.html";
         }
 
-        var applicationId = urlHost.Replace(hostingLocation, string.Empty, StringComparison.OrdinalIgnoreCase).Trim('.');
+        var applicationId = urlHost.Replace(externalDomain, string.Empty, StringComparison.OrdinalIgnoreCase).Trim('.');
 
         DocumentResponse? documentResponse;
 
@@ -79,7 +85,7 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
             }
             else
             {
-                LohostWebsite lohostWebsite = new LohostWebsite(logger, hostingLocation);
+                LohostWebsite lohostWebsite = new LohostWebsite(logger, externalDomain);
 
                 documentResponse = await lohostWebsite.GetDocument(queryPath);
             }
@@ -116,4 +122,4 @@ app.MapGet("{*.}", async (HttpContext httpContext) =>
     }
 });
 
-app.Run();
+app.Run(internalURL);
