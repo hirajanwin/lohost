@@ -47,7 +47,7 @@ namespace lohost.API.Controllers
             }
             else
             {
-                string websitePath = Path.Join(Directory.GetCurrentDirectory(), "website", document.Trim('/').Replace('/', '\\'));
+                string websitePath = Path.Join(Directory.GetCurrentDirectory(), "website", document.Trim('/').Replace('/', Path.DirectorySeparatorChar));
 
                 _logger.Debug($"Local website path: {websitePath}");
 

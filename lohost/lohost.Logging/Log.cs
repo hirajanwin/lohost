@@ -13,7 +13,7 @@ namespace lohost.Logging
             _logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .WriteTo.Console(Serilog.Events.LogEventLevel.Information)
-            .WriteTo.File($"{path}\\logfile.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: daysLogCount)
+            .WriteTo.File($"{path}{Path.DirectorySeparatorChar}logfile.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: daysLogCount)
             .CreateLogger();
         }
 
