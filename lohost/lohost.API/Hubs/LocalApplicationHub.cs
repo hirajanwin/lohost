@@ -60,7 +60,7 @@ namespace lohost.API.Hubs
         {
             List<ListedApplication> listedApplications = new List<ListedApplication>();
 
-            foreach (ApplicationConnection application in _ConnectedApplications.Where(ca => ca.Value.IsListed).Select(ca => ca.Value))
+            foreach (ApplicationConnection application in _ConnectedApplications.Where(ca => ca.Value.IsListed && !string.IsNullOrEmpty(ca.Value.Name)).Select(ca => ca.Value))
             {
                 listedApplications.Add(new ListedApplication()
                 {
