@@ -39,8 +39,6 @@ namespace lohost.API.Hubs
 
                     if (isEmpty)
                     {
-                        _ConnectedApplications.Remove(applicationConnection.Key);
-
                         MemoryCache connectedApplicationLockCache = MemoryCache.Default;
 
                         if (connectedApplicationLockCache.Contains(applicationConnection.Key)) connectedApplicationLockCache.Remove(applicationConnection.Key);
@@ -51,6 +49,8 @@ namespace lohost.API.Hubs
                         });
                     }
                 }
+
+                _ConnectedApplications.Remove(applicationConnection.Key);
             }
 
             await base.OnDisconnectedAsync(ex);
