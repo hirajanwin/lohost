@@ -53,7 +53,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.MapHub<LocalApplicationHub>("/ApplicationHub/v0_1");
+app.MapHub<LocalApplicationHub>("/ApplicationHub");
 
 app.MapGet("{*.}", async (HttpContext httpContext) =>
 {
