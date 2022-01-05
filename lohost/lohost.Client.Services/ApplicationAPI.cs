@@ -57,7 +57,7 @@ namespace lohost.Client.Services
                     _apiHubConnection = null;
                 }
 
-                _apiHubConnection = new HubConnectionBuilder().WithUrl(_applicationData.ExternalAPI + $"/ApplicationHub").Build();
+                _apiHubConnection = new HubConnectionBuilder().WithUrl(_applicationData.ExternalAPI + $"/ApplicationHub/v0.1").Build();
 
                 _apiHubConnection.Closed += async (error) =>
                 {
