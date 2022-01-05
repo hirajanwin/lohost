@@ -53,9 +53,9 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.MapHub<LocalApplicationHub>("/ApplicationHub/v0.1");
+app.MapHub<LocalApplicationHub>("/ApplicationHub/v0_1");
 
-app.MapGet("{*.}", async (HttpContext httpContext) =>
+app.MapGet("{*.}", async (HttpContext httpContext]) =>
 {
     string urlHost = httpContext.Request.Host.ToString();
     string queryPath = httpContext.Request.Path.ToString();
